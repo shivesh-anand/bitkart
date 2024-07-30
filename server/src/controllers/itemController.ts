@@ -38,6 +38,11 @@ const transformSecretAccessKey = process.env.AWS_TRANSFORM_SECRET_ACCESS_KEY;
 // console.log("transformAccessKeyId:", transformAccessKeyId);
 // console.log("transformSecretAccessKey:", transformSecretAccessKey);
 
+interface ImageDetail {
+  url: string;
+  key: string;
+}
+
 const s3 = new S3Client({
   credentials: {
     accessKeyId: accessKeyId!,
@@ -68,8 +73,6 @@ const randomImageName = (bytes = 32) =>
 
 export const createItem = async (req: Request, res: Response) => {
   try {
-    //console.log("req.body", req.body);
-    //console.log("req.file", req.file);
     const userId = req.user?.id;
     const {
       title,
@@ -88,19 +91,21 @@ export const createItem = async (req: Request, res: Response) => {
         .json({ message: "You already have an item with this title" });
     }
 
-    //resize image
-    const buffer = await sharp(req.file?.buffer).toFormat("webp").toBuffer();
-
-    const imageName = randomImageName();
-    const params = {
-      Bucket: bucketName!,
-      Key: imageName,
-      Body: buffer,
-      ContentType: req.file?.mimetype,
-    };
-    const command = new PutObjectCommand(params);
-
-    await s3.send(command);
+    // Resize and upload each image
+    const imageDetails = [];
+    for (const file of req.files as Express.Multer.File[]) {
+      const buffer = await sharp(file.buffer).toFormat("webp").toBuffer();
+      const imageName = randomImageName();
+      const params = {
+        Bucket: bucketName!,
+        Key: imageName,
+        Body: buffer,
+        ContentType: file.mimetype,
+      };
+      const command = new PutObjectCommand(params);
+      await s3.send(command);
+      imageDetails.push({ key: imageName });
+    }
 
     const newItem = new Item({
       title,
@@ -111,7 +116,7 @@ export const createItem = async (req: Request, res: Response) => {
       year_of_purchase,
       category,
       seller: userId,
-      images: imageName,
+      images: imageDetails,
     });
     await newItem.save();
 
@@ -135,48 +140,98 @@ export const getAllItems = async (req: Request, res: Response) => {
 export const getItems = async (req: Request, res: Response) => {
   try {
     const userId = req.user?.id;
+    const { format = "webp", width, height, quality } = req.query;
+
     const items = await Item.find({ seller: userId }).populate("seller", [
       "firstName",
       "lastName",
       "email",
     ]);
 
-    //console.log(items);
+    const transformedItems = await Promise.all(
+      items.map(async (item) => {
+        const images: ImageDetail[] = item.images.map((image) => {
+          let transformedUrl = cloudfrontDomain + image.key;
+          if (format || width || height || quality) {
+            const params = [];
+            if (format) params.push(`format=${format}`);
+            if (width) params.push(`width=${width}`);
+            if (height) params.push(`height=${height}`);
+            if (quality) params.push(`quality=${quality}`);
+            transformedUrl += `?${params.join("&")}`;
+          }
 
-    for (const item of items) {
-      //console.log("item:", item);
-
-      if (item.images && item.images.length > 0) {
-        // item.images[0] = cloudfrontDomain + item.images[0];
-        item.images[0] = getSignedUrl({
-          url: cloudfrontDomain + item.images[0] + "?width=400&height=300",
-          dateLessThan: new Date(
-            Date.now() + 60 * 60 * 1000 * 24
-          ).toISOString(),
-          privateKey: process.env.CLOUDFRONT_PRIVATE_KEY!,
-          keyPairId: process.env.CLOUDFRONT_KEY_PAIR_ID!,
+          return {
+            url: getSignedUrl({
+              url: transformedUrl,
+              dateLessThan: new Date(
+                Date.now() + 60 * 60 * 1000 * 24
+              ).toISOString(),
+              privateKey: process.env.CLOUDFRONT_PRIVATE_KEY!,
+              keyPairId: process.env.CLOUDFRONT_KEY_PAIR_ID!,
+            }),
+            key: image.key,
+          };
         });
-      }
-    }
 
-    res.json(items);
+        return { ...item.toObject(), images };
+      })
+    );
+
+    res.json(transformedItems);
   } catch (error) {
-    //console.error("Server error:", error);
     res.status(500).json({ message: "Server error", error });
   }
 };
 
 export const getItemById = async (req: Request, res: Response) => {
   try {
+    const { format = "webp", width, height, quality } = req.query;
+    // console.log("req.query:", req.query);
+    // console.log("req.params:", req.params);
+    // console.log("format:", format);
+    // console.log("width:", width);
+    // console.log("height:", height);
+
     const item = await Item.findById(req.params.id).populate("seller", [
       "firstName",
       "lastName",
       "email",
     ]);
+
     if (!item) {
       return res.status(404).json({ message: "Item not found" });
     }
-    res.json(item);
+
+    if (!item.images || item.images.length === 0) {
+      return res.status(404).json({ message: "Item has no images" });
+    }
+
+    const images: ImageDetail[] = item.images.map((image) => {
+      let transformedUrl = cloudfrontDomain + image.key;
+      if (format || width || height || quality) {
+        const params = [];
+        if (format) params.push(`format=${format}`);
+        if (width) params.push(`width=${width}`);
+        if (height) params.push(`height=${height}`);
+        if (quality) params.push(`quality=${quality}`);
+        transformedUrl += `?${params.join("&")}`;
+      }
+
+      return {
+        url: getSignedUrl({
+          url: transformedUrl,
+          dateLessThan: new Date(
+            Date.now() + 60 * 60 * 1000 * 24
+          ).toISOString(),
+          privateKey: process.env.CLOUDFRONT_PRIVATE_KEY!,
+          keyPairId: process.env.CLOUDFRONT_KEY_PAIR_ID!,
+        }),
+        key: image.key,
+      };
+    });
+
+    res.json({ ...item.toObject(), images });
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
   }
@@ -213,26 +268,172 @@ export const updateItem = async (req: Request, res: Response) => {
 export const deleteItem = async (req: Request, res: Response) => {
   try {
     const item = await Item.findById(req.params.id);
-    console.log("item:", item);
+
     if (!item || item.seller.toString() !== req.user?.id) {
       return res
         .status(404)
         .json({ message: "Item not found or not authorized" });
     }
 
-    const params = {
-      Bucket: bucketName!,
-      Key: item.images[0],
+    // Delete images from S3
+    const deleteParams = {
+      Bucket: bucketName,
+      Delete: {
+        Objects: item.images.map((image) => ({ Key: image.key })),
+      },
     };
-
-    const command = new DeleteObjectCommand(params);
-    await s3.send(command);
+    const deleteCommand = new DeleteObjectsCommand(deleteParams);
+    await s3.send(deleteCommand);
 
     // List and delete transformed images
-    const imageKey = item.images[0];
+    const transformedImageKeys = item.images.map((image) => image.key);
+    for (const imageKey of transformedImageKeys) {
+      const listTransformedParams = {
+        Bucket: transformBucketName!,
+        Prefix: imageKey + "/",
+      };
+      const listTransformedCommand = new ListObjectsV2Command(
+        listTransformedParams
+      );
+      const listedObjects = await transformS3.send(listTransformedCommand);
+
+      if (listedObjects.Contents && listedObjects.Contents.length > 0) {
+        const deleteTransformedParams = {
+          Bucket: transformBucketName!,
+          Delete: {
+            Objects: listedObjects.Contents.map((content) => ({
+              Key: content.Key,
+            })),
+          },
+        };
+        const deleteTransformedCommand = new DeleteObjectsCommand(
+          deleteTransformedParams
+        );
+        await transformS3.send(deleteTransformedCommand);
+      }
+    }
+
+    // Invalidate the CloudFront cache for the deleted images
+    const invalidationPaths = item.images.map((image) => `/${image.key}`);
+    const invalidationParams = {
+      DistributionId: cloudFrontDistID,
+      InvalidationBatch: {
+        CallerReference: new Date().toISOString(),
+        Paths: {
+          Quantity: invalidationPaths.length,
+          Items: invalidationPaths,
+        },
+      },
+    };
+    const invalidationCommand = new CreateInvalidationCommand(
+      invalidationParams
+    );
+    await cloudFront.send(invalidationCommand);
+
+    // Delete the item from the database
+    await Item.deleteOne({ _id: item._id });
+
+    // Remove item from user's items list
+    await User.findByIdAndUpdate(req.user?.id, { $pull: { items: item._id } });
+
+    res.json({ message: "Item deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+export const updateImages = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user?.id;
+    const itemId = req.params.id;
+    const item = await Item.findById(itemId);
+
+    if (!item || item.seller.toString() !== userId) {
+      return res
+        .status(404)
+        .json({ message: "Item not found or not authorized" });
+    }
+
+    if (item.images.length >= 4) {
+      return res
+        .status(400)
+        .json({ message: "You cannot upload more than 4 images" });
+    }
+
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ message: "Please upload images" });
+    }
+
+    // Resize and upload new images
+    const newImages = [];
+    for (const file of req.files as Express.Multer.File[]) {
+      const buffer = await sharp(file.buffer).toFormat("webp").toBuffer();
+      const imageName = randomImageName();
+      const params = {
+        Bucket: bucketName,
+        Key: imageName,
+        Body: buffer,
+        ContentType: file.mimetype,
+      };
+      const command = new PutObjectCommand(params);
+      await s3.send(command);
+      newImages.push({
+        url: `${process.env.CLOUDFRONT_DOMAIN}${imageName}`,
+        key: imageName,
+      });
+    }
+
+    // Update images in item
+    const updatedImages = [...item.images, ...newImages];
+    item.images = updatedImages.slice(0, 4); // Ensure only 4 images are kept
+    await item.save();
+
+    res.json({ message: "Images updated successfully", item });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
+export const deleteImage = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user?.id;
+    const itemId = req.params.itemId;
+    const imageKey = req.params.imageId;
+
+    // console.log("userId:", userId);
+    // console.log("itemId:", itemId);
+    // console.log("imageKey:", imageKey);
+    // console.log(req.params);
+
+    // Find the item
+    const item = await Item.findById(itemId);
+
+    if (!item || item.seller._id.toString() !== userId) {
+      return res
+        .status(404)
+        .json({ message: "Item not found or not authorized" });
+    }
+
+    // Find the image to delete
+    const imageToDelete = item.images.find((image) => image.key === imageKey);
+
+    if (!imageToDelete) {
+      return res.status(404).json({ message: "Image not found" });
+    }
+
+    // Delete image from S3
+    const deleteParams = {
+      Bucket: bucketName,
+      Delete: {
+        Objects: [{ Key: imageToDelete.key }],
+      },
+    };
+    const deleteCommand = new DeleteObjectsCommand(deleteParams);
+    await s3.send(deleteCommand);
+
+    // List and delete transformed images
     const listTransformedParams = {
       Bucket: transformBucketName!,
-      Prefix: imageKey + "/",
+      Prefix: imageToDelete.key + "/",
     };
     const listTransformedCommand = new ListObjectsV2Command(
       listTransformedParams
@@ -253,30 +454,29 @@ export const deleteItem = async (req: Request, res: Response) => {
       );
       await transformS3.send(deleteTransformedCommand);
     }
-    //Invalidate the cloudfront cache for the deleted image
+
+    // Invalidate the CloudFront cache for the deleted image
     const invalidationParams = {
       DistributionId: cloudFrontDistID,
       InvalidationBatch: {
-        CallerReference: item.images[0],
+        CallerReference: new Date().toISOString(),
         Paths: {
           Quantity: 1,
-          Items: ["/" + item.images[0]],
+          Items: [`/${imageToDelete.key}`],
         },
       },
     };
-
     const invalidationCommand = new CreateInvalidationCommand(
       invalidationParams
     );
     await cloudFront.send(invalidationCommand);
 
-    await Item.deleteOne({ _id: item._id });
+    // Remove image from item
+    item.images = item.images.filter((image) => image.key !== imageKey);
+    await item.save();
 
-    await User.findByIdAndUpdate(req.user?.id, { $pull: { items: item._id } });
-
-    res.json({ message: "Item removed" });
+    res.json({ message: "Image deleted successfully", item });
   } catch (error) {
-    //console.error("Error deleting item:", error);
     res.status(500).json({ message: "Server error", error });
   }
 };

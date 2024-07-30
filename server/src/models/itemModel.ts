@@ -4,7 +4,10 @@ export interface IItem extends Document {
   title: string;
   description: string;
   price: number;
-  images: string[];
+  images: {
+    url: string;
+    key: string;
+  }[];
   category: string;
   year_of_purchase: number;
   room_no?: string;
@@ -27,11 +30,12 @@ const ItemSchema = new Schema<IItem>(
       type: Number,
       required: [true, "Price is required"],
     },
-    images: {
-      type: [String], // Update the type to an array of strings
-
-      required: true,
-    },
+    images: [
+      {
+        url: String,
+        key: String,
+      },
+    ],
     category: {
       type: String,
       required: [true, "Category is required"],
