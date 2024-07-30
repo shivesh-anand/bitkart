@@ -7,6 +7,9 @@
 .pnp.js
 .env
 
+private_key.pem
+public_key.pem
+
 # testing
 /coverage
 

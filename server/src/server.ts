@@ -1,5 +1,4 @@
 import cluster from "node:cluster";
-import http from "node:http";
 import { availableParallelism } from "node:os";
 import process from "node:process";
 import app from "./app.js";
