@@ -1,60 +1,61 @@
-import { Button } from '@nextui-org/button';
-import GradualSpacing from '@/components/magicui/gradual-spacing';
-import ProductList from '@/components/product-list';
+import { Button } from "@nextui-org/button";
+
 import {
-  WatchIcon,
   BikeIcon,
-  ElectronicsIcon,
-  StationaryIcon,
-  HomeIcon,
-  ClothingIcon,
-  ShoeIcon,
-  HospitalIcon,
-  SportsIcon,
   BooksIcon,
+  ClothingIcon,
+  ElectronicsIcon,
   HeartFilledIcon,
-} from '@/components/icons'; // Import all required icons
-import { IconSvgProps } from '@/types';
+  HomeIcon,
+  HospitalIcon,
+  ShoeIcon,
+  SportsIcon,
+  StationaryIcon,
+  WatchIcon,
+} from "@/components/icons"; // Import all required icons
+import GradualSpacing from "@/components/magicui/gradual-spacing";
+import ProductList from "@/components/product-list";
+import { IconSvgProps } from "@/types";
 
 type Category =
-  | 'stationary'
-  | 'bikes'
-  | 'electronics'
-  | 'hostel-essentials'
-  | 'clothing'
-  | 'shoes'
-  | 'accessories'
-  | 'beauty-and-health'
-  | 'sports'
-  | 'books-and-notes'
-  | 'others';
+  | "stationary"
+  | "bikes"
+  | "electronics"
+  | "hostel-essentials"
+  | "clothing"
+  | "shoes"
+  | "accessories"
+  | "beauty-and-health"
+  | "sports"
+  | "books-and-notes"
+  | "others";
 
 const categoryIcons: Record<Category, React.FC<IconSvgProps>> = {
   stationary: StationaryIcon,
   bikes: BikeIcon,
   electronics: ElectronicsIcon,
-  'hostel-essentials': HomeIcon,
+  "hostel-essentials": HomeIcon,
   clothing: ClothingIcon,
   shoes: ShoeIcon,
   accessories: WatchIcon,
-  'beauty-and-health': HospitalIcon,
+  "beauty-and-health": HospitalIcon,
   sports: SportsIcon,
-  'books-and-notes': BooksIcon,
+  "books-and-notes": BooksIcon,
   others: HeartFilledIcon,
 };
 
 const categoryTitles: Record<Category, string> = {
-  stationary: 'Stationary',
-  bikes: 'Bikes',
-  electronics: 'Electronics',
-  'hostel-essentials': 'Hostel Essentials',
-  clothing: 'Clothing',
-  shoes: 'Shoes',
-  accessories: 'Accessories',
-  'beauty-and-health': 'Beauty & Health',
-  sports: 'Sports',
-  'books-and-notes': 'Books & Notes',
-  others: 'Others',
+  stationary: "Stationary",
+  bikes: "Bikes",
+  electronics: "Electronics",
+  "hostel-essentials": "Hostel Essentials",
+  clothing: "Clothing",
+  shoes: "Shoes",
+  accessories: "Accessories",
+  "beauty-and-health": "Beauty & Health",
+  sports: "Sports",
+  "books-and-notes": "Books & Notes",
+  others: "Others",
 };
 
 export default function CategoryPage({
@@ -63,8 +64,11 @@ export default function CategoryPage({
   params: { categoryname: string };
 }) {
   const { categoryname } = params;
+
   const IconComponent = categoryIcons[categoryname as Category];
   const title = categoryTitles[categoryname as Category];
+
+  console.log("category name", categoryname);
 
   return (
     <div>
@@ -77,7 +81,8 @@ export default function CategoryPage({
           text={title}
         />
       </div>
-      <ProductList category={title} />
+
+      <ProductList category={categoryname} />
     </div>
   );
 }

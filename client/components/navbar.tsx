@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-'use client';
+"use client";
 
 import {
   Navbar as NextUINavbar,
@@ -9,27 +9,28 @@ import {
   NavbarBrand,
   NavbarItem,
   NavbarMenuItem,
-} from '@nextui-org/navbar';
+} from "@nextui-org/navbar";
 import {
   Dropdown,
   DropdownTrigger,
   DropdownMenu,
   DropdownSection,
   DropdownItem,
-} from '@nextui-org/dropdown';
-import { Button } from '@nextui-org/button';
-import { Kbd } from '@nextui-org/kbd';
-import { Link } from '@nextui-org/link';
-import { Input } from '@nextui-org/input';
-import { link as linkStyles } from '@nextui-org/theme';
-import NextLink from 'next/link';
-import clsx from 'clsx';
-import { Avatar } from '@nextui-org/avatar';
-import { usePathname, useRouter } from 'next/navigation';
-import { toast, Toaster } from 'react-hot-toast';
+} from "@nextui-org/dropdown";
+import { Button } from "@nextui-org/button";
+import { Kbd } from "@nextui-org/kbd";
+import { Link } from "@nextui-org/link";
+import { Input } from "@nextui-org/input";
+import { link as linkStyles } from "@nextui-org/theme";
+import NextLink from "next/link";
+import clsx from "clsx";
+import { Avatar } from "@nextui-org/avatar";
+import { usePathname, useRouter } from "next/navigation";
+import { toast, Toaster } from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
 
-import { siteConfig } from '@/config/site';
-import { ThemeSwitch } from '@/components/theme-switch';
+import { siteConfig } from "@/config/site";
+import { ThemeSwitch } from "@/components/theme-switch";
 import {
   SearchIcon,
   AccountEditIcon,
@@ -38,40 +39,52 @@ import {
   CartIcon,
   AddIcon,
   SignIn,
-} from '@/components/icons';
+} from "@/components/icons";
+import { RootState } from "@/redux/store";
+import { logout } from "@/redux/slices/authSlice";
 
 export const Navbar = () => {
   const router = useRouter();
+  const dispatch = useDispatch();
   const pathname = usePathname();
-  const isAuthPage = pathname === '/login' || pathname === '/signup';
-  const isLoggedIn = true; // Change this according to your authentication logic
-  const id = 123;
-  const imageURL = 'https://i.pravatar.cc/150?u=a042581f4e29026024d';
+  const isAuthPage = pathname === "/login" || pathname === "/signup";
+  const isAuthenticated = useSelector(
+    (state: RootState) => state.auth.isAuthenticated
+  );
+
+  const user = useSelector((state: RootState) => state.auth.user);
+  const isLoggedIn = isAuthenticated ? true : false; // Change this according to your authentication logic
+  const id = user?._id;
+  const imageURL = "https://i.pravatar.cc/150?u=a042581f4e29026024d";
+
+  console.log("User:", user);
+
   function handleLogout() {
-    toast.success('Logged out successfully');
+    dispatch(logout());
+    toast.success("Logged out successfully");
+    router.push("/");
   }
   const handleSellButtonClick = () => {
     try {
       if (!isLoggedIn) {
-        toast.error('You need to be logged in to access this page.');
-        router.push('/login');
+        toast.error("You need to be logged in to access this page.");
+        router.push("/login");
       } else {
         router.push(`/user/${id}/sell`);
       }
     } catch (error) {
-      console.log(error);
-      toast.error('An error occurred. Please try again.');
+      toast.error("An error occurred. Please try again.");
     }
   };
   const searchInput = (
     <Input
       aria-label="Search"
       classNames={{
-        inputWrapper: 'bg-default-100',
-        input: 'text-sm',
+        inputWrapper: "bg-default-100",
+        input: "text-sm",
       }}
       endContent={
-        <Kbd className="hidden lg:inline-block" keys={['command']}>
+        <Kbd className="hidden lg:inline-block" keys={["command"]}>
           K
         </Kbd>
       }
@@ -101,75 +114,71 @@ export const Navbar = () => {
           <div className="hidden lg:flex flex-grow mx-4">{searchInput}</div>
 
           {/* Only show Dropdown if not on an auth page */}
-          {!isAuthPage && (
-            <div>
-              {isLoggedIn ? (
-                <Dropdown>
-                  <DropdownTrigger>
-                    <Avatar
-                      isBordered
-                      showFallback
-                      size="sm"
-                      src={imageURL}
-                      className="cursor-pointer"
-                    />
-                  </DropdownTrigger>
-                  <DropdownMenu
-                    aria-label="Dropdown menu with description"
-                    variant="faded"
+          {!isAuthPage && isLoggedIn ? (
+            <Dropdown>
+              <DropdownTrigger>
+                <Avatar
+                  isBordered
+                  showFallback
+                  className="cursor-pointer"
+                  size="sm"
+                  src={imageURL}
+                />
+              </DropdownTrigger>
+              <DropdownMenu
+                aria-label="Dropdown menu with description"
+                variant="faded"
+              >
+                <DropdownSection showDivider title="Actions">
+                  <DropdownItem
+                    key="edit-profile"
+                    description="View and Edit your profile"
+                    href={`/user/${id}/edit-profile`}
+                    startContent={<AccountEditIcon />}
                   >
-                    <DropdownSection showDivider title="Actions">
-                      <DropdownItem
-                        key="edit-profile"
-                        description="View and Edit your profile"
-                        href={`/user/${id}/edit-profile`}
-                        startContent={<AccountEditIcon />}
-                      >
-                        Edit Profile
-                      </DropdownItem>
-                      <DropdownItem
-                        key="items"
-                        description="View and manage items for sale"
-                        href={`/user/${id}/my-items`}
-                        startContent={<CartIcon />}
-                      >
-                        My Items
-                      </DropdownItem>
-                      <DropdownItem
-                        key="help"
-                        description="Need Assistance? Get help here"
-                        href={`/user/${id}/help`}
-                        startContent={<HelpIcon />}
-                      >
-                        Help
-                      </DropdownItem>
-                    </DropdownSection>
-                    <DropdownSection>
-                      <DropdownItem
-                        key="logout"
-                        className="text-danger"
-                        color="danger"
-                        startContent={<SignOut className={'text-danger'} />}
-                        onClick={() => {
-                          handleLogout();
-                        }}
-                      >
-                        Log Out
-                      </DropdownItem>
-                    </DropdownSection>
-                  </DropdownMenu>
-                </Dropdown>
-              ) : (
-                <Button
-                  className="text-md font-bold transition duration-200 hover:bg-sky-500 hover:text-black"
-                  startContent={<SignIn />}
-                  variant="shadow"
-                  onClick={() => router.push('/login')}
-                >
-                  Login
-                </Button>
-              )}
-            </div>
+                    Edit Profile
+                  </DropdownItem>
+                  <DropdownItem
+                    key="items"
+                    description="View and manage items for sale"
+                    href={`/user/${id}/my-items`}
+                    startContent={<CartIcon />}
+                  >
+                    My Items
+                  </DropdownItem>
+                  <DropdownItem
+                    key="help"
+                    description="Need Assistance? Get help here"
+                    href={`/user/${id}/help`}
+                    startContent={<HelpIcon />}
+                  >
+                    Help
+                  </DropdownItem>
+                </DropdownSection>
+                <DropdownSection>
+                  <DropdownItem
+                    key="logout"
+                    className="text-danger"
+                    color="danger"
+                    startContent={<SignOut className={"text-danger"} />}
+                    onClick={() => {
+                      handleLogout();
+                    }}
+                  >
+                    Log Out
+                  </DropdownItem>
+                </DropdownSection>
+              </DropdownMenu>
+            </Dropdown>
+          ) : (
+            <Button
+              className="text-md font-bold transition duration-200 hover:bg-sky-500 hover:text-black"
+              startContent={<SignIn />}
+              variant="shadow"
+              onClick={() => router.push("/login")}
+            >
+              Login
+            </Button>
           )}
 
           <Button
@@ -194,8 +203,8 @@ export const Navbar = () => {
               <NavbarItem key={item.href}>
                 <NextLink
                   className={clsx(
-                    linkStyles({ color: 'foreground' }),
-                    'data-[active=true]:text-primary data-[active=true]:font-medium'
+                    linkStyles({ color: "foreground" }),
+                    "data-[active=true]:text-primary data-[active=true]:font-medium"
                   )}
                   color="foreground"
                   href={item.href}
@@ -216,10 +225,10 @@ export const Navbar = () => {
               <Link
                 color={
                   index === 2
-                    ? 'primary'
+                    ? "primary"
                     : index === siteConfig.navMenuItems.length - 1
-                      ? 'danger'
-                      : 'foreground'
+                      ? "danger"
+                      : "foreground"
                 }
                 href="#"
                 size="lg"

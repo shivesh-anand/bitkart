@@ -1,16 +1,72 @@
 /* eslint-disable prettier/prettier */
+"use client";
+
 import { Button } from "@nextui-org/button";
 import { Card, CardBody, CardFooter, CardHeader } from "@nextui-org/card";
 import { Input } from "@nextui-org/input";
 import { Link } from "@nextui-org/link";
 import { LockIcon, MailIcon } from "lucide-react";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
+import Cookies from "js-cookie";
 
 import GradualSpacing from "@/components/magicui/gradual-spacing";
 import { BorderBeam } from "@/components/magicui/border-beam";
 import { GoogleIcon, SignIn } from "@/components/icons";
+import { useLoginMutation } from "@/redux/api/apiSlice";
+import { setCredentials } from "@/redux/slices/authSlice";
+import { RootState } from "@/redux/store";
 
 const LoginPage = () => {
+  const [form, setForm] = useState({ email: "", password: "" });
+  const [login, { isLoading }] = useLoginMutation();
+  const dispatch = useDispatch();
+  const router = useRouter();
+
+  const isAuthenticated = useSelector(
+    (state: RootState) => state.auth.isAuthenticated
+  );
+
+  useEffect(() => {
+    const token = Cookies.get("token");
+
+    if (isAuthenticated || token) {
+      router.replace("/");
+    }
+  }, [isAuthenticated, router]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      const response = await login(form).unwrap();
+
+      dispatch(
+        setCredentials({
+          token: response.token,
+          firstName: response.firstName,
+          lastName: response.lastName,
+          email: response.email,
+          _id: response._id,
+        })
+      );
+
+      toast.success("Logged in successfully", { id: "logged in" });
+
+      router.push("/");
+    } catch (err: any) {
+      toast.error(err.data.message);
+    }
+  };
+
   return (
     <Card fullWidth={true} shadow="lg">
       <CardHeader className="text-center text-5xl font-extrabold justify-center">
@@ -20,33 +76,43 @@ const LoginPage = () => {
         />
       </CardHeader>
       <CardBody>
-        <form className="flex flex-col py-4 px-4 gap-4 w-full">
+        <form
+          className="flex flex-col py-4 px-4 gap-4 w-full"
+          onSubmit={handleSubmit}
+        >
           <Input
             endContent={
               <MailIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
             }
             label="Email"
+            name="email"
             placeholder="Enter your email"
+            value={form.email}
             variant="bordered"
+            onChange={handleChange}
           />
           <Input
             endContent={
               <LockIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
             }
             label="Password"
+            name="password"
             placeholder="Enter your password"
             type="password"
+            value={form.password}
             variant="bordered"
+            onChange={handleChange}
           />
           <Button
             className="font-bold text-lg w-full transition duration-200 hover:bg-green-500 hover:text-black"
+            isDisabled={isLoading}
             size="lg"
             startContent={<SignIn />}
-            variant="shadow"
             type="submit"
+            variant="shadow"
           >
             Login
-          </Button>{" "}
+          </Button>
         </form>
         <h1 className="text-center">OR</h1>
         <form className="flex flex-col py-4 px-4 gap-4 w-full">
@@ -54,8 +120,8 @@ const LoginPage = () => {
             className="font-bold text-lg w-full transition duration-200 hover:bg-green-500 hover:text-black"
             size="lg"
             startContent={<GoogleIcon />}
-            variant="shadow"
             type="submit"
+            variant="shadow"
           >
             Login with Google
           </Button>

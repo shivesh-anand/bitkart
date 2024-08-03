@@ -130,8 +130,84 @@ export const createItem = async (req: Request, res: Response) => {
 
 export const getAllItems = async (req: Request, res: Response) => {
   try {
-    const items = await Item.find();
-    res.json(items);
+    const {
+      search = "",
+      category = "",
+      minPrice = 0,
+      maxPrice = Number.MAX_SAFE_INTEGER,
+      page = 1,
+      limit = 10,
+      format,
+      width,
+      height,
+      quality,
+    } = req.query;
+
+    // Convert query parameters to appropriate types
+    const pageNumber = parseInt(page as string, 10);
+    const pageSize = parseInt(limit as string, 10);
+    const minPriceValue = parseFloat(minPrice as string);
+    const maxPriceValue = parseFloat(maxPrice as string);
+
+    // Build query object with case-insensitive partial match
+    const query: any = {
+      price: { $gte: minPriceValue, $lte: maxPriceValue },
+      title: { $regex: search, $options: "i" }, // 'i' for case-insensitive search
+    };
+    if (category) {
+      query.category = category;
+    }
+
+    // Get items with pagination
+    const items = await Item.find(query)
+      .skip((pageNumber - 1) * pageSize)
+      .limit(pageSize)
+      .populate("seller", ["firstName", "lastName", "email"]);
+
+    // Transform images for each item
+    const transformedItems = await Promise.all(
+      items.map(async (item) => {
+        const images: ImageDetail[] = item.images.map((image) => {
+          let transformedUrl = cloudfrontDomain + image.key;
+          if (format || width || height || quality) {
+            const params = [];
+            if (format) params.push(`format=${format}`);
+            if (width) params.push(`width=${width}`);
+            if (height) params.push(`height=${height}`);
+            if (quality) params.push(`quality=${quality}`);
+            transformedUrl += `?${params.join("&")}`;
+          }
+
+          return {
+            url: getSignedUrl({
+              url: transformedUrl,
+              dateLessThan: new Date(
+                Date.now() + 60 * 60 * 1000 * 24
+              ).toISOString(),
+              privateKey: process.env.CLOUDFRONT_PRIVATE_KEY!,
+              keyPairId: process.env.CLOUDFRONT_KEY_PAIR_ID!,
+            }),
+            key: image.key,
+          };
+        });
+
+        return { ...item.toObject(), images };
+      })
+    );
+
+    // Get total count for pagination
+    const totalItems = await Item.countDocuments(query);
+    const totalPages = Math.ceil(totalItems / pageSize);
+
+    res.json({
+      items: transformedItems,
+      pagination: {
+        page: pageNumber,
+        pageSize: pageSize,
+        totalItems,
+        totalPages,
+      },
+    });
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
   }

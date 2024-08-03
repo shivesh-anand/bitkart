@@ -1,19 +1,46 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { setupListeners } from "@reduxjs/toolkit/query";
+import { combineReducers } from "redux";
+import {
+  persistStore,
+  persistReducer,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from "redux-persist";
+import storage from "redux-persist/lib/storage"; // defaults to localStorage for web
 
-import { userApi } from "./services/user";
+import { apiSlice } from "./api/apiSlice";
 import authReducer from "./slices/authSlice";
+import { itemApi } from "./api/itemSlice";
 
-export const store = configureStore({
-  reducer: {
-    [userApi.reducerPath]: userApi.reducer,
-    auth: authReducer,
-  },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(userApi.middleware),
+const rootReducer = combineReducers({
+  auth: authReducer,
+  [itemApi.reducerPath]: itemApi.reducer, // Add itemApi.reducer here
+  [apiSlice.reducerPath]: apiSlice.reducer, // Add apiSlice.reducer here
 });
 
-setupListeners(store.dispatch);
+const persistConfig = {
+  key: "root",
+  storage,
+  whitelist: ["auth"],
+};
+
+const persistedReducer = persistReducer(persistConfig, rootReducer);
+
+export const store = configureStore({
+  reducer: persistedReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    }).concat(apiSlice.middleware, itemApi.middleware),
+});
+
+export const persistor = persistStore(store);
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

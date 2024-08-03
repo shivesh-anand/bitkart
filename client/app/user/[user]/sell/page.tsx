@@ -1,24 +1,29 @@
-'use client';
-import { useRouter } from 'next/navigation';
-import React, { useState } from 'react';
-import { Button } from '@nextui-org/button';
-import { Card, CardBody, CardFooter, CardHeader } from '@nextui-org/card';
-import { Input } from '@nextui-org/input';
-import { Link } from '@nextui-org/link';
-import { Select, SelectItem } from '@nextui-org/select';
-import { LockIcon, MailIcon, User2Icon } from 'lucide-react';
+"use client";
+import { useRouter } from "next/navigation";
+import React, { useState } from "react";
+import { Button } from "@nextui-org/button";
+import { Input } from "@nextui-org/input";
+import { Select, SelectItem } from "@nextui-org/select";
+import { Textarea } from "@nextui-org/input";
+import { Toaster, toast } from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
 
-import GradualSpacing from '@/components/magicui/gradual-spacing';
-import { GoogleIcon, SignIn, UploadIcon } from '@/components/icons';
-import { Textarea } from '@nextui-org/input';
-import { Toaster, toast } from 'react-hot-toast';
+import GradualSpacing from "@/components/magicui/gradual-spacing";
+import { GoogleIcon, UploadIcon } from "@/components/icons";
+import { RootState } from "@/redux/store";
 
 const SellPage = () => {
   const router = useRouter();
-  const isLoggedIn = true;
+  const dispatch = useDispatch();
+
+  const user = useSelector((state: RootState) => state.auth.user);
+  const isLoggedIn = user ? true : false;
 
   if (!isLoggedIn) {
-    router.push('/login');
+    toast.error("You need to be logged in to access this page", {
+      id: "login",
+    });
+    router.replace("/login");
   }
 
   const sortedCategories = categories.sort((a, b) =>
@@ -26,20 +31,20 @@ const SellPage = () => {
   );
 
   const currentYear = new Date().getFullYear();
-  const [year, setYear] = useState<string>('');
-  const [error, setError] = useState<string>('');
+  const [year, setYear] = useState<string>("");
+  const [error, setError] = useState<string>("");
   const [invalid, setInvalid] = useState<boolean>(false);
   const [files, setFiles] = useState<File[]>([]);
-  const [fileError, setFileError] = useState<string>('');
+  const [fileError, setFileError] = useState<string>("");
   const [isFileValid, setIsFileValid] = useState<boolean>(false);
 
   const handleYearChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
 
-    if (value === '' || (/^\d{0,4}$/.test(value) && +value <= currentYear)) {
+    if (value === "" || (/^\d{0,4}$/.test(value) && +value <= currentYear)) {
       setInvalid(false);
       setYear(value);
-      setError('');
+      setError("");
     } else {
       setInvalid(true);
       setError(`Please enter a valid year up to ${currentYear}`);
@@ -48,14 +53,16 @@ const SellPage = () => {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = e.target.files;
+
     if (selectedFiles) {
       const fileArray = Array.from(selectedFiles);
-      const allowedFormats = ['image/jpeg', 'image/png'];
+      const allowedFormats = ["image/jpeg", "image/png"];
 
       if (fileArray.length > 4) {
         setIsFileValid(true);
 
-        toast.error('You can only upload up to 4 files.');
+        toast.error("You can only upload up to 4 files.");
+
         return;
       }
 
@@ -63,14 +70,15 @@ const SellPage = () => {
         if (!allowedFormats.includes(file.type)) {
           setIsFileValid(true);
 
-          toast.error('Only JPEG, JPG, or PNG formats are allowed.');
+          toast.error("Only JPEG, JPG, or PNG formats are allowed.");
+
           return;
         }
       }
 
       setIsFileValid(false);
       setFiles(fileArray);
-      setFileError('');
+      setFileError("");
     }
   };
 
@@ -97,18 +105,18 @@ const SellPage = () => {
           )}
         </Select>
         <Input
+          isClearable
+          isRequired
           label="Item Title"
           placeholder="Enter Item title"
           variant="bordered"
-          isRequired
-          isClearable
         />
         <Textarea
+          disableAutosize
+          isRequired
           label="Item Description"
           placeholder="Enter the Item description"
           variant="bordered"
-          isRequired
-          disableAutosize
         />
 
         <Input
@@ -125,59 +133,59 @@ const SellPage = () => {
         />
 
         <Input
-          startContent="₹"
+          isClearable
+          isRequired
           label="Item Price"
           placeholder="Set A Price"
+          startContent="₹"
           type="number"
           variant="bordered"
-          isRequired
-          isClearable
         />
         <Input
+          isClearable
           label="Room Number"
           placeholder="e.g.: 376"
           type="number"
           variant="bordered"
-          isClearable
         />
         <Input
+          isClearable
+          isRequired
           label="Hostel Number"
           placeholder="e.g.: 11"
           type="number"
           variant="bordered"
-          isRequired
-          isClearable
         />
 
         <Button
-          variant="shadow"
+          fullWidth
           color="secondary"
           size="lg"
           startContent={<UploadIcon />}
-          fullWidth
+          variant="shadow"
         >
           Upload Upto 4 Photos
           <Input
-            className="absolute inset-0.5 opacity-0 cursor-pointer"
-            type="file"
-            size="lg"
-            variant="bordered"
+            fullWidth
             isClearable
             multiple
-            isInvalid={isFileValid}
-            errorMessage={fileError}
-            onChange={handleFileChange}
             accept=".jpeg, .jpg, .png"
-            fullWidth
+            className="absolute inset-0.5 opacity-0 cursor-pointer"
+            errorMessage={fileError}
+            isInvalid={isFileValid}
+            size="lg"
+            type="file"
+            variant="bordered"
+            onChange={handleFileChange}
           />
         </Button>
 
         <Button
-          size="lg"
+          fullWidth
           color="success"
+          size="lg"
           startContent={<GoogleIcon />}
           variant="shadow"
-          fullWidth
         >
           Upload Ad
         </Button>
@@ -190,36 +198,36 @@ export default SellPage;
 
 const categories = [
   {
-    label: 'Electronics',
+    label: "Electronics",
   },
   {
-    label: 'Clothing',
+    label: "Clothing",
   },
   {
-    label: 'Stationery',
+    label: "Stationery",
   },
   {
-    label: 'Hostel Essentials',
+    label: "Hostel Essentials",
   },
   {
-    label: 'Shoes',
+    label: "Shoes",
   },
   {
-    label: 'Sports',
+    label: "Sports",
   },
   {
-    label: 'Others',
+    label: "Others",
   },
   {
-    label: 'Books and Notes',
+    label: "Books and Notes",
   },
   {
-    label: 'Bikes',
+    label: "Bikes",
   },
   {
-    label: 'Accessories',
+    label: "Accessories",
   },
   {
-    label: 'Beauty and Health',
+    label: "Beauty and Health",
   },
 ];

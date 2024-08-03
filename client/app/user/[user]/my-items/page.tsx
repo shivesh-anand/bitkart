@@ -1,14 +1,14 @@
-import { Button } from '@nextui-org/button';
-import { Link } from '@nextui-org/link';
-import dynamic from 'next/dynamic';
+import { Button } from "@nextui-org/button";
+import { Link } from "@nextui-org/link";
+import dynamic from "next/dynamic";
 
-import Ripple from '@/components/magicui/ripple';
+import Ripple from "@/components/magicui/ripple";
 
-const ItemsTable = dynamic(() => import('@/components/items-table'), {
+const ItemsTable = dynamic(() => import("@/components/items-table"), {
   ssr: false,
 });
 
-const items = [];
+const items = ["saxsx"];
 const MyItemsPage = () => {
   const id = 123;
 
