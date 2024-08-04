@@ -1,6 +1,6 @@
-import * as React from 'react';
+import * as React from "react";
 
-import { IconSvgProps } from '@/types';
+import { IconSvgProps } from "@/types";
 
 export const Logo: React.FC<IconSvgProps> = ({
   size = 36,
@@ -486,6 +486,26 @@ export const ArrowPrev: React.FC<IconSvgProps> = ({
     {...props}
   >
     <path d="M8 0a8 8 0 100 16A8 8 0 008 0zm3.5 7.5a.5.5 0 010 1H5.707l2.147 2.146a.5.5 0 01-.708.708l-3-3a.5.5 0 010-.708l3-3a.5.5 0 11.708.708L5.707 7.5H11.5z" />
+  </svg>
+);
+
+export const CrossIcon: React.FC<IconSvgProps> = ({
+  size = 24,
+  width,
+  height,
+  ...props
+}) => (
+  <svg
+    viewBox="0 0 16 16"
+    fill="currentColor"
+    height={size || height}
+    width={size || width}
+    {...props}
+  >
+    <path
+      fill="currentColor"
+      d="M15.854 12.854L11 8l4.854-4.854a.503.503 0 000-.707L13.561.146a.499.499 0 00-.707 0L8 5 3.146.146a.5.5 0 00-.707 0L.146 2.439a.499.499 0 000 .707L5 8 .146 12.854a.5.5 0 000 .707l2.293 2.293a.499.499 0 00.707 0L8 11l4.854 4.854a.5.5 0 00.707 0l2.293-2.293a.499.499 0 000-.707z"
+    />
   </svg>
 );
 export const DiscordIcon: React.FC<IconSvgProps> = ({

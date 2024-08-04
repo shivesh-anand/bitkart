@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import React, { useState, useEffect } from "react";
 import { Button } from "@nextui-org/button";
 import { Input, Textarea } from "@nextui-org/input";
@@ -22,28 +23,28 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import {
+  useUpdateItemMutation,
+  useUpdateImagesMutation,
+  useDeleteImageMutation,
+  useGetItemByIdQuery,
+} from "@/redux/api/itemSlice";
+import { Item } from "@/types/item";
 
 interface EditItemModalProps {
-  itemid: string;
+  initialItem: Item;
+  itemId: string; // Added this line
   onClose: () => void;
 }
 
-const itemdetails = {
-  imageURLS: [
-    "https://nextui-docs-v2.vercel.app/images/hero-card-complete.jpeg",
-    "https://nextui-docs-v2.vercel.app/images/hero-card-complete.jpeg",
-  ],
-  title: "Item Title",
-  price: 1000,
-  description: "Item Description",
-  "room number": 428,
-  "hostel number": 5,
-};
-
-export default function EditItemModal({ itemid, onClose }: EditItemModalProps) {
+export default function EditItemModal({
+  initialItem,
+  itemId,
+  onClose,
+}: EditItemModalProps) {
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [disableUploadButton, setDisableUploadButton] = useState(false);
-  const [images, setImages] = useState(itemdetails.imageURLS);
+  const [images, setImages] = useState<string[]>([]);
   const [disableEditButton, setDisableEditButton] = useState(false);
   const [editLoading, setEditLoading] = useState(false);
   const [formValues, setFormValues] = useState({
@@ -54,30 +55,95 @@ export default function EditItemModal({ itemid, onClose }: EditItemModalProps) {
     hostelNumber: "",
   });
 
+  const { data: fetchedItem, refetch } = useGetItemByIdQuery(itemId);
+  const [updateItem] = useUpdateItemMutation();
+  const [updateImages] = useUpdateImagesMutation();
+  const [deleteImage] = useDeleteImageMutation();
+
+  useEffect(() => {
+    if (fetchedItem) {
+      setImages(fetchedItem.images.map((img: { url: string }) => img.url));
+      setFormValues({
+        title: fetchedItem.title,
+        description: fetchedItem.description,
+        price: String(fetchedItem.price),
+        roomNumber: String(fetchedItem.room_no || ""),
+        hostelNumber: String(fetchedItem.hostel_no),
+      });
+    }
+  }, [fetchedItem]);
+
   useEffect(() => {
     setDisableUploadButton(images.length >= 4);
   }, [images]);
 
-  const handleDelete = (image: string) => {
+  const handleDelete = async (imageUrl: string) => {
     setDeleteLoading(true);
     setDisableEditButton(true);
-    setTimeout(() => {
-      setImages(images.filter((img) => img !== image));
+    try {
+      const imageId = imageUrl.split("/").pop(); // Assuming image URL ends with imageId
+
+      await deleteImage({ itemId, imageId }).unwrap();
+      setImages(images.filter((img) => img !== imageUrl));
       toast.success("Image deleted successfully");
-      setDisableEditButton(false);
+    } catch (error) {
+      toast.error("Failed to delete image");
+    } finally {
       setDeleteLoading(false);
-    }, 2000);
+      setDisableEditButton(false);
+    }
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
+    const allowedFormats = ["image/jpeg", "image/png", "image/jpg"];
+    let totalSize = 0;
 
-    if (files.length + images.length <= 4) {
-      const newImages = files.map((file) => URL.createObjectURL(file));
-
-      setImages([...images, ...newImages]);
-    } else {
+    if (files.length + images.length > 4) {
       toast.error(`You can only upload ${4 - images.length} more images`);
+
+      return;
+    }
+    for (let file of files) {
+      if (!allowedFormats.includes(file.type)) {
+        toast.error("Only JPEG, JPG, or PNG formats are allowed.");
+
+        return;
+      }
+      totalSize += file.size;
+    }
+
+    if (totalSize > 25 * 1024 * 1024) {
+      // 25 MB
+
+      toast.error("Total file size exceeds 25 MB.");
+
+      return;
+    }
+    setDisableUploadButton(true);
+    setEditLoading(true);
+    try {
+      const formData = new FormData();
+
+      files.forEach((file) => formData.append("images", file));
+      const response = await updateImages({ id: itemId, formData }).unwrap();
+
+      if (response && response.item && response.item.images) {
+        const newImageUrls = response.item.images.map(
+          (img: { url: string }) => img.url
+        );
+
+        setImages(newImageUrls); // Update images state with new URLs
+        toast.success("Images uploaded successfully");
+      } else {
+        toast.error("Failed to upload images");
+      }
+    } catch (error) {
+      //console.error(error);
+      toast.error("Failed to upload images");
+    } finally {
+      setDisableUploadButton(false);
+      setEditLoading(false);
     }
   };
 
@@ -92,30 +158,31 @@ export default function EditItemModal({ itemid, onClose }: EditItemModalProps) {
     });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setDisableEditButton(true);
     setEditLoading(true);
-    setTimeout(() => {
-      // Collect changed fields
+    try {
+      const updatedFields: Partial<Item> = {
+        title: formValues.title,
+        description: formValues.description,
+        price: Number(formValues.price),
+        room_no: formValues.roomNumber || undefined,
+        hostel_no: formValues.hostelNumber || undefined,
+      };
 
-      const updatedFields: any = {};
+      await updateItem({
+        id: itemId,
+        updatedItem: updatedFields,
+      }).unwrap();
 
-      Object.keys(formValues).forEach((key) => {
-        if (formValues[key]) {
-          updatedFields[key] = formValues[key];
-        }
-      });
-
-      // Include the updated images
-      updatedFields.images = images;
-
-      // Submit the updated fields
-      setDisableEditButton(false);
-      setEditLoading(false);
-      console.log("Submitting updated fields:", updatedFields);
       toast.success("Item updated successfully");
       onClose();
-    }, 2000);
+    } catch (error) {
+      toast.error("Failed to update item");
+    } finally {
+      setDisableEditButton(false);
+      setEditLoading(false);
+    }
   };
 
   return (
@@ -123,7 +190,7 @@ export default function EditItemModal({ itemid, onClose }: EditItemModalProps) {
       <Toaster />
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1">
-          Edit Ad {itemid}
+          Edit Item {formValues.title}
         </ModalHeader>
         <ScrollShadow>
           <ModalBody>
@@ -133,9 +200,12 @@ export default function EditItemModal({ itemid, onClose }: EditItemModalProps) {
                   {images.map((image, index) => (
                     <CarouselItem key={index}>
                       <Image
+                        isBlurred
                         alt="Product image"
-                        className="object-cover w-full h-full mb-4"
+                        className="object-contain"
+                        height={300}
                         src={image}
+                        width={400}
                       />
                       <Button
                         fullWidth
@@ -157,76 +227,85 @@ export default function EditItemModal({ itemid, onClose }: EditItemModalProps) {
             </div>
             <form
               className="flex flex-col py-4 px-4 gap-4 w-full"
-              onSubmit={handleSubmit}
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleSubmit();
+              }}
             >
               <Input
-                label="Edit Ad Title"
+                label="Edit Item Title"
                 name="title"
-                placeholder={itemdetails.title}
+                placeholder={formValues.title}
                 type="text"
+                value={formValues.title}
                 variant="bordered"
                 onChange={handleInputChange}
               />
               <Textarea
-                label="Edit Ad Description"
+                label="Edit Item Description"
                 name="description"
-                placeholder={itemdetails.description}
+                placeholder={formValues.description}
+                value={formValues.description}
                 variant="bordered"
                 onChange={handleInputChange}
               />
               <Input
-                label="Edit Ad Price"
+                label="Edit Item Price"
                 name="price"
-                placeholder={String(itemdetails.price)}
+                placeholder={String(formValues.price)}
                 startContent="₹"
                 type="number"
+                value={formValues.price}
                 variant="bordered"
                 onChange={handleInputChange}
               />
               <Input
                 label="Edit Room Number"
                 name="roomNumber"
-                placeholder={String(itemdetails["room number"])}
+                placeholder={String(formValues.roomNumber)}
                 type="number"
+                value={formValues.roomNumber}
                 variant="bordered"
                 onChange={handleInputChange}
               />
               <Input
                 label="Edit Hostel Number"
                 name="hostelNumber"
-                placeholder={String(itemdetails["hostel number"])}
+                placeholder={String(formValues.hostelNumber)}
                 type="number"
+                value={formValues.hostelNumber}
                 variant="bordered"
                 onChange={handleInputChange}
               />
-              <Button
-                fullWidth
-                color="secondary"
-                isDisabled={disableUploadButton}
-                isLoading={editLoading}
-                size="lg"
-                startContent={<UploadIcon />}
-                variant="shadow"
-              >
-                {images.length === 4
-                  ? "Maximum Photos uploaded"
-                  : `Upload ${4 - images.length} More Photos`}
-                <Input
-                  fullWidth
-                  isClearable
-                  multiple
-                  accept=".jpeg, .jpg, .png"
-                  className="absolute inset-0.5 opacity-0 cursor-pointer"
-                  size="lg"
-                  type="file"
-                  variant="bordered"
-                  onChange={handleImageUpload}
-                />
-              </Button>
             </form>
           </ModalBody>
         </ScrollShadow>
         <ModalFooter>
+          <form>
+            <Button
+              fullWidth
+              color="secondary"
+              isDisabled={disableUploadButton}
+              isLoading={editLoading}
+              startContent={<UploadIcon />}
+              variant="shadow"
+            >
+              {images.length === 4
+                ? "Maximum Photos uploaded"
+                : `Upload ${4 - images.length} More Photos`}
+              <Input
+                fullWidth
+                isClearable
+                multiple
+                accept=".jpeg, .jpg, .png"
+                className="absolute inset-0.5 opacity-0 cursor-pointer"
+                size="lg"
+                type="file"
+                variant="bordered"
+                onChange={handleImageUpload}
+              />
+            </Button>
+          </form>
           <Button
             color="success"
             isDisabled={disableEditButton}

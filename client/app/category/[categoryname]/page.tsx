@@ -68,7 +68,7 @@ export default function CategoryPage({
   const IconComponent = categoryIcons[categoryname as Category];
   const title = categoryTitles[categoryname as Category];
 
-  console.log("category name", categoryname);
+  //console.log("category name", categoryname);
 
   return (
     <div>

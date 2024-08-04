@@ -1,15 +1,16 @@
+/* eslint-disable prettier/prettier */
 "use client";
-import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/card";
-import { Image } from "@nextui-org/image";
+import { Card, CardBody, CardFooter, CardHeader } from "@nextui-org/card";
 import { Chip } from "@nextui-org/chip";
-import { useRouter } from "next/navigation";
+import { Image } from "@nextui-org/image";
 import moment from "moment";
+import { useRouter } from "next/navigation";
+import { Spinner } from "@nextui-org/spinner";
+import toast from "react-hot-toast";
 
 import BlurFade from "./magicui/blur-fade";
 
 import { useGetAllItemsQuery } from "@/redux/api/itemSlice";
-import { Spinner } from "@nextui-org/spinner";
-import toast from "react-hot-toast";
 
 interface ProductProps {
   category?: string;
@@ -34,15 +35,20 @@ export interface Item {
 
 const ProductList = ({ category }: ProductProps) => {
   const router = useRouter();
-  const { data, error, isLoading } = useGetAllItemsQuery({ category });
 
-  console.log(data);
+  const { data, error, isLoading } = useGetAllItemsQuery({
+    category,
+    format: "webp",
+    quality: 50,
+  });
+
+  //console.log("data", data);
 
   const filteredData = category
     ? data?.items.filter((item: Item) => item.category === category)
     : data?.items;
 
-  console.log(data);
+  //console.log(data);
   const handlePress = (id: string) => {
     router.push(`/productpage/${id}`);
   };

@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Table,
   TableBody,
@@ -8,65 +8,46 @@ import {
   TableColumn,
   TableHeader,
   TableRow,
-} from '@nextui-org/table';
-import { Tooltip } from '@nextui-org/tooltip';
-import { User } from '@nextui-org/user';
-import { Edit3Icon, EyeIcon, Trash2 } from 'lucide-react';
-import { Chip } from '@nextui-org/chip';
-import DeleteConfirmationModal from '@/components/delete-item-modal';
-import ViewItemModal from '@/components/view-item-modal';
-import EditItemModal from '@/components/edit-item-modal';
+} from "@nextui-org/table";
+import { Tooltip } from "@nextui-org/tooltip";
+import { User } from "@nextui-org/user";
+import { Edit3Icon, EyeIcon, Trash2 } from "lucide-react";
+import { Chip } from "@nextui-org/chip";
+import DeleteConfirmationModal from "@/components/delete-item-modal";
+import ViewItemModal from "@/components/view-item-modal";
+import EditItemModal from "@/components/edit-item-modal";
+import { Item } from "@/types/item";
 
 const columns = [
-  { key: 'name', name: 'Name' },
-  { key: 'price', name: 'Price' },
-  { key: 'status', name: 'Status' },
-  { key: 'actions', name: 'Actions' },
+  { key: "name", name: "Name" },
+  { key: "price", name: "Price" },
+  { key: "status", name: "Status" },
+  { key: "actions", name: "Actions" },
 ];
 
-const products = [
-  {
-    id: 1,
-    title: 'Used MacBook Pro',
-    description:
-      'Used MacBook Pro 2019 13-inch Used MacBook Pro 2019 13-inch Used MacBook Pro 2019 13-inch Used MacBook Pro 2019 13-inch',
-    price: '1200',
-    status: 'listed',
-    image: 'https://example.com/images/macbook-pro.jpg',
-  },
-  {
-    id: 2,
-    title: 'Mountain Bike',
-    description: 'Mountain Bike 29-inch',
-    price: '350',
-    status: 'sold',
-    image: 'https://example.com/images/mountain-bike.jpg',
-  },
-  {
-    id: 3,
-    title: 'Stationery Set',
-    description: 'Stationery Set for school',
-    price: '15',
-    status: 'removed',
-    image: 'https://example.com/images/stationery.jpg',
-  },
-  // Add more products as needed
-];
-
-const statusColorMap = {
-  sold: 'success',
-  removed: 'danger',
-  listed: 'warning',
+const statusColorMap: { [key: string]: "success" | "danger" | "warning" } = {
+  sold: "success",
+  removed: "danger",
+  listed: "warning",
 };
 
-export default function ItemsTable() {
+interface ItemsTableProps {
+  items: [Item];
+}
+
+export default function ItemsTable({ items }: ItemsTableProps) {
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState<boolean>(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
+  const [selectedItem, setSelectedItem] = useState<any | null>(null);
+  //console.log("items table", items);
 
   const openDeleteModal = (itemId: string) => {
     setSelectedItemId(itemId);
+    //console.log("selected item id", selectedItemId);
+    setSelectedItem(items.find((item) => item._id === itemId));
+    //console.log("selected item", selectedItem);
     setIsModalOpen(true);
   };
 
@@ -77,6 +58,7 @@ export default function ItemsTable() {
 
   const openViewModal = (itemId: string) => {
     setSelectedItemId(itemId);
+    setSelectedItem(items.find((item) => item._id === itemId));
     setIsViewModalOpen(true);
   };
 
@@ -87,6 +69,7 @@ export default function ItemsTable() {
 
   const openEditModal = (itemId: string) => {
     setSelectedItemId(itemId);
+    setSelectedItem(items.find((item) => item._id === itemId));
     setIsEditModalOpen(true);
   };
 
@@ -94,56 +77,54 @@ export default function ItemsTable() {
     setIsEditModalOpen(false);
     setSelectedItemId(null);
   };
-  const renderCell = React.useCallback((product: any, columnKey: string) => {
+  const renderCell = React.useCallback((item: any, columnKey: string) => {
     switch (columnKey) {
-      case 'name':
+      case "name":
         return (
           <div className="flex items-center gap-4">
             <div>
-              <h1 className="font-semibold text-md">{product.title}</h1>
-              <p className="font-extralight">{`${product.description.substring(0, 50)}...`}</p>
+              <h1 className="font-semibold text-md">{item.title}</h1>
+              <p className="font-extralight">{`${item.description.substring(0, 50)}...`}</p>
             </div>
           </div>
         );
-      case 'price':
+      case "price":
         return (
-          <p className="text-bold text-sm capitalize text-left">
-            {product.price}
-          </p>
+          <p className="text-bold text-sm capitalize text-left">{item.price}</p>
         );
-      case 'status':
+      case "status":
         return (
           <Chip
             className="capitalize"
-            color={statusColorMap[product.status]}
+            color={statusColorMap[item.status ? item.status : "listed"]}
             size="sm"
             variant="flat"
           >
-            {product.status}
+            {item.status ? item.status : "listed"}
           </Chip>
         );
-      case 'actions':
+      case "actions":
         return (
           <div className="relative flex items-center gap-2">
             <Tooltip content="Details">
               <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                <EyeIcon onClick={() => openViewModal(product.id)} />
+                <EyeIcon onClick={() => openViewModal(item._id)} />
               </span>
             </Tooltip>
             <Tooltip content="Edit Ad">
               <span className="text-lg text-default-400 curstor-pointer active:opacity-50">
-                <Edit3Icon onClick={() => openEditModal(product.id)} />
+                <Edit3Icon onClick={() => openEditModal(item._id)} />
               </span>
             </Tooltip>
             <Tooltip color="danger" content="Delete Ad">
               <span className="text-lg text-danger cursor-pointer active:opacity-50">
-                <Trash2 onClick={() => openDeleteModal(product.id)} />
+                <Trash2 onClick={() => openDeleteModal(item._id)} />
               </span>
             </Tooltip>
           </div>
         );
       default:
-        return product[columnKey];
+        return item[columnKey];
     }
   }, []);
 
@@ -157,19 +138,19 @@ export default function ItemsTable() {
           {(column) => (
             <TableColumn
               key={column.key}
-              align={column.key === 'price' ? 'center' : 'start'}
+              align={column.key === "price" ? "center" : "start"}
               className="text-left"
             >
               {column.name}
             </TableColumn>
           )}
         </TableHeader>
-        <TableBody items={products}>
+        <TableBody items={items}>
           {(item) => (
-            <TableRow key={item.id}>
+            <TableRow key={item._id}>
               {(columnKey) => (
                 <TableCell className="text-left">
-                  {renderCell(item, columnKey)}
+                  {renderCell(item, String(columnKey))}
                 </TableCell>
               )}
             </TableRow>
@@ -178,15 +159,19 @@ export default function ItemsTable() {
       </Table>
       {isModalOpen && selectedItemId && (
         <DeleteConfirmationModal
-          itemid={selectedItemId}
+          item={selectedItem}
           onClose={closeDeleteModal}
         />
       )}
       {isViewModalOpen && selectedItemId && (
-        <ViewItemModal itemid={selectedItemId} onClose={closeViewModal} />
+        <ViewItemModal item={selectedItem} onClose={closeViewModal} />
       )}
       {isEditModalOpen && selectedItemId && (
-        <EditItemModal itemid={selectedItemId} onClose={closeEditModal} />
+        <EditItemModal
+          initialItem={selectedItem}
+          itemId={selectedItem._id}
+          onClose={closeEditModal}
+        />
       )}
     </div>
   );

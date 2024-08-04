@@ -1,81 +1,77 @@
 /* eslint-disable prettier/prettier */
 "use client";
 
-import {
-  Navbar as NextUINavbar,
-  NavbarContent,
-  NavbarMenu,
-  NavbarMenuToggle,
-  NavbarBrand,
-  NavbarItem,
-  NavbarMenuItem,
-} from "@nextui-org/navbar";
+import { Avatar } from "@nextui-org/avatar";
+import { Button } from "@nextui-org/button";
 import {
   Dropdown,
-  DropdownTrigger,
+  DropdownItem,
   DropdownMenu,
   DropdownSection,
-  DropdownItem,
+  DropdownTrigger,
 } from "@nextui-org/dropdown";
-import { Button } from "@nextui-org/button";
+import { Input } from "@nextui-org/input";
 import { Kbd } from "@nextui-org/kbd";
 import { Link } from "@nextui-org/link";
-import { Input } from "@nextui-org/input";
+import {
+  NavbarBrand,
+  NavbarContent,
+  NavbarItem,
+  NavbarMenu,
+  NavbarMenuItem,
+  NavbarMenuToggle,
+  Navbar as NextUINavbar,
+} from "@nextui-org/navbar";
 import { link as linkStyles } from "@nextui-org/theme";
-import NextLink from "next/link";
 import clsx from "clsx";
-import { Avatar } from "@nextui-org/avatar";
+import NextLink from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { toast, Toaster } from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 
-import { siteConfig } from "@/config/site";
-import { ThemeSwitch } from "@/components/theme-switch";
 import {
-  SearchIcon,
   AccountEditIcon,
-  SignOut,
-  HelpIcon,
-  CartIcon,
   AddIcon,
+  CartIcon,
+  SearchIcon,
   SignIn,
+  SignOut,
 } from "@/components/icons";
-import { RootState } from "@/redux/store";
+import { ThemeSwitch } from "@/components/theme-switch";
+import { siteConfig } from "@/config/site";
 import { logout } from "@/redux/slices/authSlice";
+import { RootState } from "@/redux/store";
 
 export const Navbar = () => {
-  const router = useRouter();
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
   const dispatch = useDispatch();
+  const router = useRouter();
   const pathname = usePathname();
-  const isAuthPage = pathname === "/login" || pathname === "/signup";
+  const user = useSelector((state: RootState) => state.auth.user);
   const isAuthenticated = useSelector(
     (state: RootState) => state.auth.isAuthenticated
   );
 
-  const user = useSelector((state: RootState) => state.auth.user);
-  const isLoggedIn = isAuthenticated ? true : false; // Change this according to your authentication logic
-  const id = user?._id;
-  const imageURL = "https://i.pravatar.cc/150?u=a042581f4e29026024d";
+  useEffect(() => {
+    setIsLoggedIn(isAuthenticated);
+  }, [isAuthenticated]);
 
-  console.log("User:", user);
-
-  function handleLogout() {
+  const handleLogout = () => {
     dispatch(logout());
     toast.success("Logged out successfully");
     router.push("/");
-  }
+  };
+
   const handleSellButtonClick = () => {
-    try {
-      if (!isLoggedIn) {
-        toast.error("You need to be logged in to access this page.");
-        router.push("/login");
-      } else {
-        router.push(`/user/${id}/sell`);
-      }
-    } catch (error) {
-      toast.error("An error occurred. Please try again.");
+    if (!isLoggedIn) {
+      toast.error("You need to be logged in to access this page.");
+      router.push("/login");
+    } else {
+      router.push(`/user/${user?._id}/sell`);
     }
   };
+
   const searchInput = (
     <Input
       aria-label="Search"
@@ -114,7 +110,9 @@ export const Navbar = () => {
           <div className="hidden lg:flex flex-grow mx-4">{searchInput}</div>
 
           {/* Only show Dropdown if not on an auth page */}
-          {!isAuthPage && isLoggedIn ? (
+          {!pathname.startsWith("/login") &&
+          !pathname.startsWith("/signup") &&
+          isLoggedIn ? (
             <Dropdown>
               <DropdownTrigger>
                 <Avatar
@@ -122,7 +120,6 @@ export const Navbar = () => {
                   showFallback
                   className="cursor-pointer"
                   size="sm"
-                  src={imageURL}
                 />
               </DropdownTrigger>
               <DropdownMenu
@@ -133,7 +130,7 @@ export const Navbar = () => {
                   <DropdownItem
                     key="edit-profile"
                     description="View and Edit your profile"
-                    href={`/user/${id}/edit-profile`}
+                    href={`/user/${user?._id}/edit-profile`}
                     startContent={<AccountEditIcon />}
                   >
                     Edit Profile
@@ -141,18 +138,10 @@ export const Navbar = () => {
                   <DropdownItem
                     key="items"
                     description="View and manage items for sale"
-                    href={`/user/${id}/my-items`}
+                    href={`/user/${user?._id}/my-items`}
                     startContent={<CartIcon />}
                   >
                     My Items
-                  </DropdownItem>
-                  <DropdownItem
-                    key="help"
-                    description="Need Assistance? Get help here"
-                    href={`/user/${id}/help`}
-                    startContent={<HelpIcon />}
-                  >
-                    Help
                   </DropdownItem>
                 </DropdownSection>
                 <DropdownSection>

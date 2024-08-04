@@ -1,15 +1,13 @@
 import "@/styles/globals.css";
-import { Metadata, Viewport } from "next";
-import { Link } from "@nextui-org/link";
 import clsx from "clsx";
+import { Metadata, Viewport } from "next";
 
-import { Providers } from "./providers";
-import { siteConfig } from "@/config/site";
-import { fontSans } from "@/config/fonts";
-import { Navbar } from "@/components/navbar";
-import { DM_Sans } from "next/font/google";
-import Footer from "@/components/footer";
 import ClientProvider from "@/components/client-provider"; // Import your client provider
+import Footer from "@/components/footer";
+import { Navbar } from "@/components/navbar";
+import { siteConfig } from "@/config/site";
+import { DM_Sans } from "next/font/google";
+import { Providers } from "./providers";
 
 export const metadata: Metadata = {
   title: {

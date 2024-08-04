@@ -1,23 +1,24 @@
 "use client";
+import { Button } from "@nextui-org/button";
+import { Input, Textarea } from "@nextui-org/input";
+import { Select, SelectItem } from "@nextui-org/select";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
-import { Button } from "@nextui-org/button";
-import { Input } from "@nextui-org/input";
-import { Select, SelectItem } from "@nextui-org/select";
-import { Textarea } from "@nextui-org/input";
 import { Toaster, toast } from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 
+import { AddIcon, CrossIcon, UploadIcon } from "@/components/icons";
 import GradualSpacing from "@/components/magicui/gradual-spacing";
-import { GoogleIcon, UploadIcon } from "@/components/icons";
+import { useCreateItemMutation } from "@/redux/api/itemSlice";
 import { RootState } from "@/redux/store";
 
 const SellPage = () => {
   const router = useRouter();
   const dispatch = useDispatch();
+  const [createItem] = useCreateItemMutation();
 
   const user = useSelector((state: RootState) => state.auth.user);
-  const isLoggedIn = user ? true : false;
+  const isLoggedIn = !!user;
 
   if (!isLoggedIn) {
     toast.error("You need to be logged in to access this page", {
@@ -37,6 +38,8 @@ const SellPage = () => {
   const [files, setFiles] = useState<File[]>([]);
   const [fileError, setFileError] = useState<string>("");
   const [isFileValid, setIsFileValid] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isUploading, setIsUploading] = useState<boolean>(false);
 
   const handleYearChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -54,13 +57,15 @@ const SellPage = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = e.target.files;
 
+    setIsUploading(true);
+
     if (selectedFiles) {
       const fileArray = Array.from(selectedFiles);
-      const allowedFormats = ["image/jpeg", "image/png"];
+      const allowedFormats = ["image/jpeg", "image/png", "image/jpg"];
+      let totalSize = 0;
 
       if (fileArray.length > 4) {
         setIsFileValid(true);
-
         toast.error("You can only upload up to 4 files.");
 
         return;
@@ -69,16 +74,62 @@ const SellPage = () => {
       for (let file of fileArray) {
         if (!allowedFormats.includes(file.type)) {
           setIsFileValid(true);
-
           toast.error("Only JPEG, JPG, or PNG formats are allowed.");
 
           return;
         }
+        totalSize += file.size;
+      }
+
+      if (totalSize > 25 * 1024 * 1024) {
+        // 25 MB
+        setIsFileValid(true);
+        setIsUploading(false);
+        toast.error("Total file size exceeds 25 MB.");
+
+        return;
       }
 
       setIsFileValid(false);
       setFiles(fileArray);
       setFileError("");
+      setIsUploading(false);
+    }
+  };
+
+  const handleRemoveFile = (fileToRemove: File) => {
+    setFiles((prevFiles) => prevFiles.filter((file) => file !== fileToRemove));
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+    if (files.length === 0) {
+      toast.error("Please upload at least one image.");
+
+      return;
+    }
+
+    const formData = new FormData();
+
+    formData.append("title", (e.target as any).title.value);
+    formData.append("description", (e.target as any).description.value);
+    formData.append("price", (e.target as any).price.value);
+    formData.append("year_of_purchase", year);
+    formData.append("room_no", (e.target as any).roomNumber.value);
+    formData.append("hostel_no", (e.target as any).hostelNumber.value);
+    formData.append("category", (e.target as any).category.value);
+
+    files.forEach((file) => formData.append("images", file));
+
+    try {
+      await createItem(formData).unwrap();
+      toast.success("Item created successfully");
+      setIsLoading(false);
+      router.push("/"); // Redirect to items page or another page
+    } catch (error) {
+      console.error("Error creating item:", error);
+      toast.error("Failed to create item");
     }
   };
 
@@ -86,20 +137,24 @@ const SellPage = () => {
     <div className="w-full">
       <Toaster />
       <GradualSpacing
-        className="font-display text-center text-5xl font-bold mb-4 tracking-[-0.1em]  text-black dark:text-white md:text-5xl md:leading-[5rem]"
+        className="font-display text-center text-5xl font-bold mb-4 tracking-[-0.1em] text-black dark:text-white md:text-5xl md:leading-[5rem]"
         text="Sell an Item"
       />
-      <form className="items-center justify-center flex flex-col gap-4 w-full">
+      <form
+        className="items-center justify-center flex flex-col gap-4 w-full"
+        onSubmit={handleSubmit}
+      >
         <Select
           isRequired
           items={sortedCategories}
           label="Category"
+          name="category"
           placeholder="Select a category"
           selectionMode="single"
           variant="bordered"
         >
           {(category) => (
-            <SelectItem key={category.label} value={category.label}>
+            <SelectItem key={category.value} value={category.value}>
               {category.label}
             </SelectItem>
           )}
@@ -108,6 +163,7 @@ const SellPage = () => {
           isClearable
           isRequired
           label="Item Title"
+          name="title"
           placeholder="Enter Item title"
           variant="bordered"
         />
@@ -115,27 +171,26 @@ const SellPage = () => {
           disableAutosize
           isRequired
           label="Item Description"
+          name="description"
           placeholder="Enter the Item description"
           variant="bordered"
         />
-
         <Input
           isRequired
           errorMessage={error}
           isInvalid={invalid}
           label="Year of Purchase"
-          max={currentYear}
-          min={1900}
+          name="year"
           placeholder="e.g.: 2024"
           type="number"
           variant="bordered"
           onChange={handleYearChange}
         />
-
         <Input
           isClearable
           isRequired
           label="Item Price"
+          name="price"
           placeholder="Set A Price"
           startContent="₹"
           type="number"
@@ -144,6 +199,7 @@ const SellPage = () => {
         <Input
           isClearable
           label="Room Number"
+          name="roomNumber"
           placeholder="e.g.: 376"
           type="number"
           variant="bordered"
@@ -152,25 +208,30 @@ const SellPage = () => {
           isClearable
           isRequired
           label="Hostel Number"
+          name="hostelNumber"
           placeholder="e.g.: 11"
           type="number"
           variant="bordered"
         />
 
-        <Button
-          fullWidth
-          color="secondary"
-          size="lg"
-          startContent={<UploadIcon />}
-          variant="shadow"
-        >
-          Upload Upto 4 Photos
+        <div className="relative">
+          <Button
+            fullWidth
+            color="secondary"
+            isDisabled={isUploading}
+            isLoading={isUploading}
+            size="lg"
+            startContent={<UploadIcon />}
+            variant="shadow"
+          >
+            {isUploading ? "Uploading" : "Upload Upto 4 Photos"}
+          </Button>
           <Input
             fullWidth
             isClearable
             multiple
             accept=".jpeg, .jpg, .png"
-            className="absolute inset-0.5 opacity-0 cursor-pointer"
+            className="absolute inset-0 opacity-0 cursor-pointer"
             errorMessage={fileError}
             isInvalid={isFileValid}
             size="lg"
@@ -178,16 +239,43 @@ const SellPage = () => {
             variant="bordered"
             onChange={handleFileChange}
           />
-        </Button>
+        </div>
+
+        <div className="mt-4">
+          <h3 className="text-lg font-semibold">Selected Files:</h3>
+          <ul className="list-disc pl-5">
+            {files.map((file, index) => (
+              <li
+                key={index}
+                className="flex justify-between items-center mb-2 gap-4"
+              >
+                <span>{file.name}</span>
+                <Button
+                  isIconOnly
+                  color="danger"
+                  radius="full"
+                  size="sm"
+                  variant="light"
+                  onPress={() => handleRemoveFile(file)}
+                >
+                  <CrossIcon size={16} />
+                </Button>
+              </li>
+            ))}
+          </ul>
+        </div>
 
         <Button
           fullWidth
           color="success"
+          isDisabled={isLoading}
+          isLoading={isLoading}
           size="lg"
-          startContent={<GoogleIcon />}
+          startContent={<AddIcon />}
+          type="submit"
           variant="shadow"
         >
-          Upload Ad
+          {isLoading ? "Uploading Item" : "Upload Item"}
         </Button>
       </form>
     </div>
@@ -197,37 +285,15 @@ const SellPage = () => {
 export default SellPage;
 
 const categories = [
-  {
-    label: "Electronics",
-  },
-  {
-    label: "Clothing",
-  },
-  {
-    label: "Stationery",
-  },
-  {
-    label: "Hostel Essentials",
-  },
-  {
-    label: "Shoes",
-  },
-  {
-    label: "Sports",
-  },
-  {
-    label: "Others",
-  },
-  {
-    label: "Books and Notes",
-  },
-  {
-    label: "Bikes",
-  },
-  {
-    label: "Accessories",
-  },
-  {
-    label: "Beauty and Health",
-  },
+  { label: "Electronics", value: "electronics" },
+  { label: "Clothing", value: "clothing" },
+  { label: "Stationery", value: "stationery" },
+  { label: "Hostel Essentials", value: "hostel-essentials" },
+  { label: "Shoes", value: "shoes" },
+  { label: "Sports", value: "sports" },
+  { label: "Others", value: "others" },
+  { label: "Books and Notes", value: "books-and-notes" },
+  { label: "Bikes", value: "bikes" },
+  { label: "Accessories", value: "accessories" },
+  { label: "Beauty and Health", value: "beauty-and-health" },
 ];

@@ -71,6 +71,8 @@ const randomImageName = (bytes = 32) =>
 
 // console.log(randomImageName(32));
 
+const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25 MB
+
 export const createItem = async (req: Request, res: Response) => {
   try {
     const userId = req.user?.id;
@@ -89,6 +91,17 @@ export const createItem = async (req: Request, res: Response) => {
       return res
         .status(400)
         .json({ message: "You already have an item with this title" });
+    }
+
+    // Calculate total size
+    const totalSize = (req.files as Express.Multer.File[]).reduce(
+      (acc: number, file: Express.Multer.File) => acc + file.size,
+      0
+    );
+    if (totalSize > MAX_FILE_SIZE) {
+      return res
+        .status(400)
+        .json({ message: "Total file size exceeds the 25 MB limit." });
     }
 
     // Resize and upload each image
@@ -437,6 +450,17 @@ export const updateImages = async (req: Request, res: Response) => {
 
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({ message: "Please upload images" });
+    }
+
+    // Calculate total size of new images
+    const totalSize = (req.files as Express.Multer.File[]).reduce(
+      (acc: number, file: Express.Multer.File) => acc + file.size,
+      0
+    );
+    if (totalSize > MAX_FILE_SIZE) {
+      return res
+        .status(400)
+        .json({ message: "Total file size exceeds the 25 MB limit." });
     }
 
     // Resize and upload new images

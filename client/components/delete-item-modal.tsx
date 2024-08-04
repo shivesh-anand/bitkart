@@ -1,53 +1,62 @@
 /* eslint-disable prettier/prettier */
-import { Button } from '@nextui-org/button';
+import { Button } from "@nextui-org/button";
 import {
   Modal,
   ModalContent,
   ModalFooter,
   ModalHeader,
-} from '@nextui-org/modal';
-import { useState } from 'react';
-import { toast } from 'react-hot-toast';
+} from "@nextui-org/modal";
+import { useState } from "react";
+import { toast } from "react-hot-toast";
+
+import { useDeleteItemMutation } from "@/redux/api/itemSlice";
 
 interface DeleteConfirmationModalProps {
-  itemid: string;
+  item: {
+    _id: string;
+    title: string;
+  };
+
   onClose: () => void;
 }
 
 export default function DeleteConfirmationModal({
-  itemid,
+  item,
   onClose,
 }: DeleteConfirmationModalProps) {
-  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [deleteItem, { isLoading }] = useDeleteItemMutation();
   const [disableButton, setDisableButton] = useState(false);
-
-  function handleDelete(itemid: string) {
+  console.log("delete item", item);
+  const handleDelete = async () => {
     setDisableButton(true);
-    setDeleteLoading(true);
-    setTimeout(() => {
-      toast.success('Item deleted successfully');
-      setDeleteLoading(false);
+    try {
+      await deleteItem(item._id).unwrap();
+      toast.success("Item deleted successfully");
       onClose();
-    }, 2000);
-  }
+    } catch (error) {
+      //console.error("Failed to delete item:", error);
+      toast.error("Failed to delete item");
+      setDisableButton(false);
+    }
+  };
 
   return (
     <Modal isOpen onOpenChange={onClose}>
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1">
-          Are you sure you want to delete {itemid}?
+          Are you sure you want to delete {item.title}?
         </ModalHeader>
 
         <ModalFooter>
           <Button
             color="danger"
             isDisabled={disableButton}
-            isLoading={deleteLoading}
-            onPress={() => handleDelete(itemid)}
+            isLoading={isLoading}
+            onPress={handleDelete}
           >
-            {deleteLoading ? 'Deleting...' : 'Delete'}
+            {isLoading ? "Deleting..." : "Delete"}
           </Button>
-          <Button color="primary" onPress={onClose} isDisabled={disableButton}>
+          <Button color="primary" isDisabled={disableButton} onPress={onClose}>
             Close
           </Button>
         </ModalFooter>

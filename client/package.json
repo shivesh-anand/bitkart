@@ -9,6 +9,7 @@
     "lint": "eslint . --ext .ts,.tsx -c .eslintrc.json --fix"
   },
   "dependencies": {
+    "@nextui-org/accordion": "^2.0.38",
     "@nextui-org/avatar": "^2.0.31",
     "@nextui-org/button": "2.0.35",
     "@nextui-org/card": "^2.0.32",
@@ -48,6 +49,7 @@
     "lucide-react": "^0.411.0",
     "mini-svg-data-uri": "^1.4.4",
     "moment": "^2.30.1",
+    "moment-timezone": "^0.5.45",
     "next": "14.2.4",
     "next-auth": "^5.0.0-beta.19",
     "next-themes": "^0.2.1",

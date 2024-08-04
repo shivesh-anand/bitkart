@@ -1,10 +1,8 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import Cookies from "js-cookie";
 
-// Create a base query function with credentials set to 'include' to ensure cookies are sent with requests.
 const baseQuery = fetchBaseQuery({
   baseUrl: "http://localhost:5000/api/v1",
-  credentials: "include", // Ensures cookies are sent with the request
+  credentials: "include",
 });
 
 export const itemApi = createApi({
@@ -27,6 +25,8 @@ export const itemApi = createApi({
           quality,
         } = params;
 
+        //console.log("Params:", params);
+
         const queryParams = new URLSearchParams();
 
         if (search) queryParams.append("search", search);
@@ -40,13 +40,19 @@ export const itemApi = createApi({
         if (height) queryParams.append("height", height.toString());
         if (quality) queryParams.append("quality", quality.toString());
 
-        //console.log(queryParams.toString());
-        return `item/all?${queryParams.toString()}`;
+        const queryString = `item/all?${queryParams.toString()}`;
+        //console.log("Query String:", queryString.toString());
+
+        return queryString;
       },
       providesTags: ["Items"],
     }),
+    getItemsOfUser: builder.query({
+      query: () => `item/`,
+      providesTags: ["Items"],
+    }),
     getItemById: builder.query({
-      query: (id) => `item/${id}`,
+      query: (id) => `item/${id}?format=webp&quality=80`,
       providesTags: ["Items"],
     }),
     createItem: builder.mutation({
@@ -75,7 +81,7 @@ export const itemApi = createApi({
     updateImages: builder.mutation({
       query: ({ id, formData }) => ({
         url: `item/${id}/images`,
-        method: "PUT",
+        method: "PATCH",
         body: formData,
       }),
       invalidatesTags: ["Items"],
@@ -98,4 +104,5 @@ export const {
   useDeleteItemMutation,
   useUpdateImagesMutation,
   useDeleteImageMutation,
+  useGetItemsOfUserQuery,
 } = itemApi;

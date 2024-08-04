@@ -1,13 +1,15 @@
 /* eslint-disable prettier/prettier */
-import { Button } from '@nextui-org/button';
-import { Image } from '@nextui-org/image';
+import { Accordion, AccordionItem } from "@nextui-org/accordion";
+import { Button } from "@nextui-org/button";
+import { Image } from "@nextui-org/image";
 import {
   Modal,
   ModalBody,
   ModalContent,
   ModalFooter,
   ModalHeader,
-} from '@nextui-org/modal';
+} from "@nextui-org/modal";
+import moment from "moment-timezone";
 
 import {
   Carousel,
@@ -15,18 +17,27 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from '@/components/ui/carousel';
+} from "@/components/ui/carousel";
+import { Item } from "@/types/item";
 
 interface ViewItemModalProps {
-  itemid: string;
+  item: Item;
   onClose: () => void;
 }
 
-export default function ViewItemModal({ itemid, onClose }: ViewItemModalProps) {
+export default function ViewItemModal({ item, onClose }: ViewItemModalProps) {
+  //console.log("view item", item);
+  const utcDate = moment(item.createdAt);
+  const istDate = utcDate
+    .tz("Asia/Kolkata")
+    .format("DD MMMM, YYYY hh:mm A [IST]");
+
+  const title = "Title: " + item.title;
+
   return (
-    <Modal isOpen onOpenChange={onClose}>
+    <Modal isOpen scrollBehavior="inside" onOpenChange={onClose}>
       <ModalContent>
-        <ModalHeader className="flex flex-col gap-1">{itemid}</ModalHeader>
+        <ModalHeader className="flex flex-col gap-1">{item.title}</ModalHeader>
         <ModalBody>
           <div className="flex flex-wrap items-center justify-center">
             <Carousel
@@ -36,12 +47,15 @@ export default function ViewItemModal({ itemid, onClose }: ViewItemModalProps) {
               }}
             >
               <CarouselContent>
-                {Array.from({ length: 4 }).map((_, index) => (
+                {item.images.map((image, index) => (
                   <CarouselItem key={index}>
                     <Image
+                      isBlurred
                       alt="Product image"
-                      className="object-cover w-full h-full"
-                      src={itemdetails.imageURLS[index]}
+                      className="object-contain"
+                      height={300}
+                      src={image.url}
+                      width={400}
                     />
                   </CarouselItem>
                 ))}
@@ -50,12 +64,32 @@ export default function ViewItemModal({ itemid, onClose }: ViewItemModalProps) {
               <CarouselNext className="absolute right-4 top-1/2 transform -translate-y-1/2" />
             </Carousel>
           </div>
-          <div>
-            <h1>Ad Title: {itemdetails.title}</h1>
-            <p>Description: {itemdetails.description}</p>
-            <h1>Price: {itemdetails.price}</h1>
-            <p>Room Number: {itemdetails['room number']}</p>
-            <p>Hostel Number: {itemdetails['hostel number']}</p>
+          <Accordion fullWidth isCompact>
+            <AccordionItem
+              key="description"
+              aria-label="Title Description"
+              className="text-justify"
+              subtitle="Press to expand Description"
+              title={title}
+            >
+              {item.description}
+            </AccordionItem>
+          </Accordion>
+          <div className="grid grid-cols-2 px-2">
+            <div className="font-semibold text-left">Price:</div>
+            <div className="text-left">{item.price}</div>
+
+            <div className="font-semibold text-left">Year of Purchase:</div>
+            <div className="text-left">{item.year_of_purchase}</div>
+
+            <div className="font-semibold text-left">Room Number:</div>
+            <div className="text-left">{item.room_no || "N/A"}</div>
+
+            <div className="font-semibold text-left">Hostel Number:</div>
+            <div className="text-left">{item.hostel_no}</div>
+
+            <div className="font-semibold text-left">Posted On:</div>
+            <div className="text-left">{istDate}</div>
           </div>
         </ModalBody>
 
@@ -68,17 +102,3 @@ export default function ViewItemModal({ itemid, onClose }: ViewItemModalProps) {
     </Modal>
   );
 }
-
-const itemdetails = {
-  imageURLS: [
-    'https://nextui-docs-v2.vercel.app/images/hero-card-complete.jpeg',
-    'https://nextui-docs-v2.vercel.app/images/hero-card-complete.jpeg',
-    'https://nextui-docs-v2.vercel.app/images/hero-card-complete.jpeg',
-    'https://nextui-docs-v2.vercel.app/images/hero-card-complete.jpeg',
-  ],
-  title: 'Item Title',
-  price: '₹ 1000',
-  description: 'Item Description',
-  'room number': 428,
-  'hostel number': 5,
-};
