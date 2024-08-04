@@ -53,6 +53,11 @@ export const Navbar = () => {
     (state: RootState) => state.auth.isAuthenticated
   );
 
+  const [menuOpen, setMenuOpen] = useState<boolean>(false);
+  const toggleMenu = () => setMenuOpen((prev) => !prev);
+
+  const closeMenu = () => setMenuOpen(false);
+
   useEffect(() => {
     setIsLoggedIn(isAuthenticated);
   }, [isAuthenticated]);
@@ -72,25 +77,38 @@ export const Navbar = () => {
     }
   };
 
+  const handleSearch = (e: any) => {
+    e.preventDefault();
+    const query = e.target.elements.search.value;
+
+    if (query.trim()) {
+      router.push(`/results?search=${query}`);
+    }
+  };
+
   const searchInput = (
-    <Input
-      aria-label="Search"
-      classNames={{
-        inputWrapper: "bg-default-100",
-        input: "text-sm",
-      }}
-      endContent={
-        <Kbd className="hidden lg:inline-block" keys={["command"]}>
-          K
-        </Kbd>
-      }
-      labelPlacement="outside"
-      placeholder="Search..."
-      startContent={
-        <SearchIcon className="text-base text-default-400 pointer-events-none flex-shrink-0" />
-      }
-      type="search"
-    />
+    <form className="flex w-full" onSubmit={handleSearch}>
+      <Input
+        aria-label="Search"
+        classNames={{
+          inputWrapper: "bg-default-100",
+          input: "text-sm",
+        }}
+        endContent={
+          <Kbd className="hidden lg:inline-block w-36" keys={["enter"]}>
+            Enter to Search
+          </Kbd>
+        }
+        labelPlacement="outside"
+        name="search"
+        placeholder="Search..."
+        startContent={
+          <SearchIcon className="text-base text-default-400 pointer-events-none flex-shrink-0" />
+        }
+        type="search"
+      />
+      <button className="hidden" type="submit" />
+    </form>
   );
 
   return (
@@ -183,7 +201,7 @@ export const Navbar = () => {
             <ThemeSwitch />
           </div>
 
-          <NavbarMenuToggle className="sm:hidden" />
+          <NavbarMenuToggle className="sm:hidden" onClick={toggleMenu} />
         </NavbarContent>
 
         <NavbarContent className="mt-2 justify-center hidden lg:flex">
@@ -212,15 +230,10 @@ export const Navbar = () => {
           {siteConfig.navMenuItems.map((item, index) => (
             <NavbarMenuItem key={`${item}-${index}`}>
               <Link
-                color={
-                  index === 2
-                    ? "primary"
-                    : index === siteConfig.navMenuItems.length - 1
-                      ? "danger"
-                      : "foreground"
-                }
-                href="#"
+                color={"foreground"}
+                href={item.href}
                 size="lg"
+                onClick={closeMenu}
               >
                 {item.label}
               </Link>

@@ -1,94 +1,110 @@
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
-  name: 'BitKart',
-  description: 'Buy and Sell used items in your college campus',
+  name: "BitKart",
+  description: "Buy and Sell used items in your college campus",
   navItems: [
     {
-      label: 'Home',
-      href: '/',
+      label: "Home",
+      href: "/",
     },
     {
-      label: 'Stationary',
-      href: '/category/stationary',
+      label: "Stationary",
+      href: "/category/stationary",
     },
     {
-      label: 'Bikes',
-      href: '/category/bikes',
+      label: "Bikes",
+      href: "/category/bikes",
     },
     {
-      label: 'Electronics',
-      href: '/category/electronics',
+      label: "Electronics",
+      href: "/category/electronics",
     },
     {
-      label: 'Hostel Essentials',
-      href: '/category/hostel-essentials',
+      label: "Hostel Essentials",
+      href: "/category/hostel-essentials",
     },
     {
-      label: 'Clothing',
-      href: '/category/clothing',
+      label: "Clothing",
+      href: "/category/clothing",
     },
     {
-      label: 'Shoes',
-      href: '/category/shoes',
+      label: "Shoes",
+      href: "/category/shoes",
     },
     {
-      label: 'Accessories',
-      href: '/category/accessories',
+      label: "Accessories",
+      href: "/category/accessories",
     },
     {
-      label: 'Beauty & Health',
-      href: '/category/beauty-and-health',
+      label: "Beauty & Health",
+      href: "/category/beauty-and-health",
     },
     {
-      label: 'Sports',
-      href: '/category/sports',
+      label: "Sports",
+      href: "/category/sports",
     },
     {
-      label: 'Books & Notes',
-      href: '/category/books-and-notes',
+      label: "Books & Notes",
+      href: "/category/books-and-notes",
     },
     {
-      label: 'Others',
-      href: '/category/others',
+      label: "Others",
+      href: "/category/others",
     },
   ],
   navMenuItems: [
     {
-      label: 'Profile',
-      href: '/profile',
+      label: "Home",
+      href: "/",
     },
     {
-      label: 'Dashboard',
-      href: '/dashboard',
+      label: "Stationary",
+      href: "/category/stationary",
     },
     {
-      label: 'Projects',
-      href: '/projects',
+      label: "Bikes",
+      href: "/category/bikes",
     },
     {
-      label: 'Team',
-      href: '/team',
+      label: "Electronics",
+      href: "/category/electronics",
     },
     {
-      label: 'Calendar',
-      href: '/calendar',
+      label: "Hostel Essentials",
+      href: "/category/hostel-essentials",
     },
     {
-      label: 'Settings',
-      href: '/settings',
+      label: "Clothing",
+      href: "/category/clothing",
     },
     {
-      label: 'Help & Feedback',
-      href: '/help-feedback',
+      label: "Shoes",
+      href: "/category/shoes",
     },
     {
-      label: 'Logout',
-      href: '/logout',
+      label: "Accessories",
+      href: "/category/accessories",
+    },
+    {
+      label: "Beauty & Health",
+      href: "/category/beauty-and-health",
+    },
+    {
+      label: "Sports",
+      href: "/category/sports",
+    },
+    {
+      label: "Books & Notes",
+      href: "/category/books-and-notes",
+    },
+    {
+      label: "Others",
+      href: "/category/others",
     },
   ],
   links: {
-    github: 'https://github.com/nextui-org/nextui',
-    mail: 'mailto:theshiveshanand@gmail.com',
+    github: "https://github.com/shivesh-anand/bitkart",
+    mail: "mailto:theshiveshanand@gmail.com",
   },
 };

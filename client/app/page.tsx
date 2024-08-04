@@ -16,7 +16,7 @@ export default function Home() {
           <CartIcon size={30} />
         </Button>{" "}
         <GradualSpacing
-          className="font-display text-center text-5xl font-bold tracking-[-0.1em]  text-black dark:text-white md:text-5xl md:leading-[5rem]"
+          className="font-display text-center text-2xl md:text-4xl lg:text-5xl font-bold tracking-[-0.1em]  text-black dark:text-white md:leading-[5rem]"
           text="Buy & Sell Used Items"
         />
       </div>
