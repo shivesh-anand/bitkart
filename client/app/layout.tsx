@@ -8,6 +8,7 @@ import { Navbar } from "@/components/navbar";
 import { siteConfig } from "@/config/site";
 import { DM_Sans } from "next/font/google";
 import { Providers } from "./providers";
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   title: {
@@ -47,6 +48,7 @@ export default function RootLayout({
           {" "}
           {/* Use the client provider here */}
           <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
+            <Toaster />
             <div className="relative flex flex-col h-screen">
               <Navbar />
               <main className="container mt-16 mx-auto w-full pt-16 px-6 flex-grow">

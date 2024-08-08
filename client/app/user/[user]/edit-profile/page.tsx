@@ -18,6 +18,10 @@ const EditProfilePage = () => {
   const { data, isError, isLoading } = useGetUserProfileQuery({});
   const [updateUserProfile] = useUpdateUserProfileMutation();
 
+  const isGoogleUser = data?.user?.googleId;
+
+  console.log("data", data);
+
   // Initialize form values
   const [formValues, setFormValues] = useState({
     firstName: "",
@@ -120,30 +124,34 @@ const EditProfilePage = () => {
               onChange={handleInputChange}
             />
 
-            <Input
-              endContent={
-                <LockIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
-              }
-              label="New Password"
-              name="password"
-              placeholder="Enter new Password"
-              type="password"
-              value={formValues.password}
-              variant="bordered"
-              onChange={handleInputChange}
-            />
-            <Input
-              endContent={
-                <LockIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
-              }
-              label="Confirm New Password"
-              name="confirmPassword"
-              placeholder="Re-Enter your new password"
-              type="password"
-              value={formValues.confirmPassword}
-              variant="bordered"
-              onChange={handleInputChange}
-            />
+            {!isGoogleUser && (
+              <>
+                <Input
+                  endContent={
+                    <LockIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+                  }
+                  label="New Password"
+                  name="password"
+                  placeholder="Enter new Password"
+                  type="password"
+                  value={formValues.password}
+                  variant="bordered"
+                  onChange={handleInputChange}
+                />
+                <Input
+                  endContent={
+                    <LockIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+                  }
+                  label="Confirm New Password"
+                  name="confirmPassword"
+                  placeholder="Re-Enter your new password"
+                  type="password"
+                  value={formValues.confirmPassword}
+                  variant="bordered"
+                  onChange={handleInputChange}
+                />
+              </>
+            )}
 
             <Button
               className="font-semibold text-lg w-full"

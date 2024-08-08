@@ -11,7 +11,6 @@ export default function Home() {
   return (
     <section className="flex flex-col items-center justify-center gap-4">
       <div className="flex flex-row items-center justify-center gap-4 mb-4">
-        <Toaster />
         <Button isIconOnly size="lg" variant="ghost">
           <CartIcon size={30} />
         </Button>{" "}

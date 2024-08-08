@@ -52,6 +52,7 @@ const SignUpPage = () => {
     e.preventDefault();
     try {
       const response = await register(form).unwrap();
+
       toast.success("Registered successfully");
       dispatch(setCredentials(response.user));
       router.push("/"); // Redirect to home or other protected page
@@ -140,6 +141,9 @@ const SignUpPage = () => {
               size="lg"
               startContent={<GoogleIcon />}
               variant="shadow"
+              onPress={() =>
+                (window.location.href = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/auth/google`)
+              }
             >
               Sign Up with Google
             </Button>

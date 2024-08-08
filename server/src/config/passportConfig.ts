@@ -12,7 +12,7 @@ passport.use(
     {
       clientID: GOOGLE_CLIENT_ID,
       clientSecret: GOOGLE_CLIENT_SECRET,
-      callbackURL: "/api/auth/google/callback",
+      callbackURL: "http://localhost:5000/api/v1/auth/google/callback",
     },
     async (token, tokenSecret, profile, done) => {
       try {
@@ -25,8 +25,10 @@ passport.use(
             email: profile.emails?.[0].value || "",
           });
         }
+        console.log("User created/saved:", user);
         done(null, user);
       } catch (err) {
+        //console.log(err);
         done(err, false);
       }
     }
@@ -37,6 +39,11 @@ passport.serializeUser((user: any, done) => {
   done(null, user.id);
 });
 
-passport.deserializeUser((id, done) => {
-  User.findById(id, (err: any, user: IUser) => done(err, user));
+passport.deserializeUser(async (id: string, done) => {
+  try {
+    const user = await User.findById(id).exec();
+    done(null, user);
+  } catch (err) {
+    done(err, null);
+  }
 });

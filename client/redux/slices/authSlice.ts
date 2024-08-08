@@ -8,6 +8,7 @@ interface User {
   email: string;
   _id: string;
   token: string;
+  googleId?: string;
 }
 
 interface AuthState {
