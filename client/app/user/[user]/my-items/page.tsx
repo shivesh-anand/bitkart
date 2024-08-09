@@ -4,10 +4,10 @@ import { Link } from "@nextui-org/link";
 import dynamic from "next/dynamic";
 import { Spinner } from "@nextui-org/spinner";
 import toast from "react-hot-toast";
+import { useSelector } from "react-redux";
 
 import Ripple from "@/components/magicui/ripple";
 import { useGetItemsOfUserQuery } from "@/redux/api/itemSlice";
-import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 
 const ItemsTable = dynamic(() => import("@/components/items-table"), {

@@ -1,13 +1,11 @@
 "use client";
-import { Button } from "@nextui-org/button";
-import { Card, CardBody, CardFooter, CardHeader } from "@nextui-org/card";
+import { Card, CardBody, CardHeader } from "@nextui-org/card";
 import { Divider } from "@nextui-org/divider";
 import { Image } from "@nextui-org/image";
 import { Spinner } from "@nextui-org/spinner";
 import { Key, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
-import { ChatIcon } from "@/components/icons";
 import {
   Carousel,
   CarouselContent,

@@ -1,7 +1,6 @@
 /* eslint-disable prettier/prettier */
 "use client";
 import { Button } from "@nextui-org/button";
-import { Toaster } from "react-hot-toast";
 
 import { CartIcon } from "@/components/icons";
 import GradualSpacing from "@/components/magicui/gradual-spacing";

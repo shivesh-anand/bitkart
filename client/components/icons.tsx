@@ -31,13 +31,13 @@ export const SignIn: React.FC<IconSvgProps> = ({
   ...props
 }) => (
   <svg
-    viewBox="0 0 24 24"
     fill="currentColor"
     height={size || height}
+    viewBox="0 0 24 24"
     width={size || width}
     {...props}
   >
-    <path fill="none" d="M0 0h24v24H0z" />
+    <path d="M0 0h24v24H0z" fill="none" />
     <path d="M10 11H2.05c.5-5.053 4.764-9 9.95-9 5.523 0 10 4.477 10 10s-4.477 10-10 10c-5.185 0-9.449-3.947-9.95-9H10v3l5-4-5-4v3z" />
   </svg>
 );
@@ -49,13 +49,13 @@ export const SignOut: React.FC<IconSvgProps> = ({
   ...props
 }) => (
   <svg
-    viewBox="0 0 24 24"
     fill="currentColor"
     height={size || height}
+    viewBox="0 0 24 24"
     width={size || width}
     {...props}
   >
-    <path fill="none" d="M0 0h24v24H0z" />
+    <path d="M0 0h24v24H0z" fill="none" />
     <path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zM7 11V8l-5 4 5 4v-3h8v-2H7z" />
   </svg>
 );
@@ -67,9 +67,9 @@ export const EditIcon: React.FC<IconSvgProps> = ({
   ...props
 }) => (
   <svg
-    viewBox="0 0 24 24"
     fill="currentColor"
     height={size || height}
+    viewBox="0 0 24 24"
     width={size || width}
     {...props}
   >
@@ -84,13 +84,13 @@ export const SettingsIcon: React.FC<IconSvgProps> = ({
   ...props
 }) => (
   <svg
-    viewBox="0 0 24 24"
     fill="currentColor"
     height={size || height}
+    viewBox="0 0 24 24"
     width={size || width}
     {...props}
   >
-    <path fill="none" d="M0 0h24v24H0z" />
+    <path d="M0 0h24v24H0z" fill="none" />
     <path d="M9.954 2.21a9.99 9.99 0 014.091-.002A3.993 3.993 0 0016 5.07a3.993 3.993 0 003.457.261A9.99 9.99 0 0121.5 8.876 3.993 3.993 0 0020 12a3.99 3.99 0 001.502 3.124 10.043 10.043 0 01-2.046 3.543 3.993 3.993 0 00-3.456.261 3.993 3.993 0 00-1.954 2.86 9.99 9.99 0 01-4.091.004A3.993 3.993 0 008 18.927a3.993 3.993 0 00-3.457-.26A9.99 9.99 0 012.5 15.121 3.993 3.993 0 004 11.999a3.993 3.993 0 00-1.502-3.124 10.043 10.043 0 012.046-3.543A3.993 3.993 0 008 5.071a3.993 3.993 0 001.954-2.86zM12 15a3 3 0 100-6 3 3 0 000 6z" />
   </svg>
 );
@@ -102,9 +102,9 @@ export const UserIcon: React.FC<IconSvgProps> = ({
   ...props
 }) => (
   <svg
-    viewBox="0 0 24 24"
     fill="currentColor"
     height={size || height}
+    viewBox="0 0 24 24"
     width={size || width}
     {...props}
   >
@@ -119,9 +119,9 @@ export const AccountEditIcon: React.FC<IconSvgProps> = ({
   ...props
 }) => (
   <svg
-    viewBox="0 0 24 24"
     fill="currentColor"
     height={size || height}
+    viewBox="0 0 24 24"
     width={size || width}
     {...props}
   >
@@ -136,9 +136,9 @@ export const HelpIcon: React.FC<IconSvgProps> = ({
   ...props
 }) => (
   <svg
-    viewBox="0 0 920 1000"
     fill="currentColor"
     height={size || height}
+    viewBox="0 0 920 1000"
     width={size || width}
     {...props}
   >
@@ -153,9 +153,9 @@ export const CartIcon: React.FC<IconSvgProps> = ({
   ...props
 }) => (
   <svg
-    viewBox="0 0 576 512"
     fill="currentColor"
     height={size || height}
+    viewBox="0 0 576 512"
     width={size || width}
     {...props}
   >
@@ -170,9 +170,9 @@ export const AddIcon: React.FC<IconSvgProps> = ({
   ...props
 }) => (
   <svg
-    viewBox="0 0 512 512"
     fill="currentColor"
     height={size || height}
+    viewBox="0 0 512 512"
     width={size || width}
     {...props}
   >
@@ -187,9 +187,9 @@ export const CopyrightIcon: React.FC<IconSvgProps> = ({
   ...props
 }) => (
   <svg
-    viewBox="0 0 24 24"
     fill="currentColor"
     height={size || height}
+    viewBox="0 0 24 24"
     width={size || width}
     {...props}
   >
@@ -204,9 +204,9 @@ export const MailIcon: React.FC<IconSvgProps> = ({
   ...props
 }) => (
   <svg
-    viewBox="0 0 900 1000"
     fill="currentColor"
     height={size || height}
+    viewBox="0 0 900 1000"
     width={size || width}
     {...props}
   >
@@ -221,9 +221,9 @@ export const LockIcon: React.FC<IconSvgProps> = ({
   ...props
 }) => (
   <svg
-    viewBox="0 0 448 512"
     fill="currentColor"
     height={size || height}
+    viewBox="0 0 448 512"
     width={size || width}
     {...props}
   >
@@ -238,9 +238,9 @@ export const ChatIcon: React.FC<IconSvgProps> = ({
   ...props
 }) => (
   <svg
-    viewBox="0 0 1024 1024"
     fill="currentColor"
     height={size || height}
+    viewBox="0 0 1024 1024"
     width={size || width}
     {...props}
   >
@@ -255,9 +255,9 @@ export const GoogleIcon: React.FC<IconSvgProps> = ({
   ...props
 }) => (
   <svg
-    viewBox="0 0 1024 1024"
     fill="currentColor"
     height={size || height}
+    viewBox="0 0 1024 1024"
     width={size || width}
     {...props}
   >
@@ -272,13 +272,13 @@ export const StationaryIcon: React.FC<IconSvgProps> = ({
   ...props
 }) => (
   <svg
-    viewBox="0 0 24 24"
     fill="currentColor"
     height={size || height}
+    viewBox="0 0 24 24"
     width={size || width}
     {...props}
   >
-    <path fill="none" d="M0 0h24v24H0z" />
+    <path d="M0 0h24v24H0z" fill="none" />
     <path d="M5 18v2h4v-2H5zM3 7l4-5 4 5v15H3V7zm18 1h-2v2h2v2h-3v2h3v2h-2v2h2v3a1 1 0 01-1 1h-6a1 1 0 01-1-1V5a1 1 0 011-1h6a1 1 0 011 1v3z" />
   </svg>
 );
@@ -290,9 +290,9 @@ export const BikeIcon: React.FC<IconSvgProps> = ({
   ...props
 }) => (
   <svg
-    viewBox="0 0 24 24"
     fill="currentColor"
     height={size || height}
+    viewBox="0 0 24 24"
     width={size || width}
     {...props}
   >
@@ -307,9 +307,9 @@ export const ElectronicsIcon: React.FC<IconSvgProps> = ({
   ...props
 }) => (
   <svg
-    viewBox="0 0 20 20"
     fill="currentColor"
     height={size || height}
+    viewBox="0 0 20 20"
     width={size || width}
     {...props}
   >
@@ -324,9 +324,9 @@ export const ClothingIcon: React.FC<IconSvgProps> = ({
   ...props
 }) => (
   <svg
-    viewBox="0 0 20 20"
     fill="currentColor"
     height={size || height}
+    viewBox="0 0 20 20"
     width={size || width}
     {...props}
   >
@@ -341,9 +341,9 @@ export const ShoeIcon: React.FC<IconSvgProps> = ({
   ...props
 }) => (
   <svg
-    viewBox="0 0 24 24"
     fill="currentColor"
     height={size || height}
+    viewBox="0 0 24 24"
     width={size || width}
     {...props}
   >
@@ -359,8 +359,8 @@ export const WatchIcon: React.FC<IconSvgProps> = ({
 }) => (
   <svg
     fill="currentColor"
-    viewBox="0 0 16 16"
     height={size || height}
+    viewBox="0 0 16 16"
     width={size || width}
     {...props}
   >
@@ -376,9 +376,9 @@ export const HospitalIcon: React.FC<IconSvgProps> = ({
   ...props
 }) => (
   <svg
-    viewBox="0 0 24 24"
     fill="currentColor"
     height={size || height}
+    viewBox="0 0 24 24"
     width={size || width}
     {...props}
   >
@@ -393,9 +393,9 @@ export const SportsIcon: React.FC<IconSvgProps> = ({
   ...props
 }) => (
   <svg
-    viewBox="0 0 24 24"
     fill="currentColor"
     height={size || height}
+    viewBox="0 0 24 24"
     width={size || width}
     {...props}
   >
@@ -410,9 +410,9 @@ export const BooksIcon: React.FC<IconSvgProps> = ({
   ...props
 }) => (
   <svg
-    viewBox="0 0 24 24"
     fill="currentColor"
     height={size || height}
+    viewBox="0 0 24 24"
     width={size || width}
     {...props}
   >
@@ -428,9 +428,9 @@ export const HomeIcon: React.FC<IconSvgProps> = ({
 }) => (
   <svg
     baseProfile="tiny"
-    viewBox="0 0 24 24"
     fill="currentColor"
     height={size || height}
+    viewBox="0 0 24 24"
     width={size || width}
     {...props}
   >
@@ -445,9 +445,9 @@ export const UploadIcon: React.FC<IconSvgProps> = ({
   ...props
 }) => (
   <svg
-    viewBox="0 0 1000 1000"
     fill="currentColor"
     height={size || height}
+    viewBox="0 0 1000 1000"
     width={size || width}
     {...props}
   >
@@ -463,8 +463,8 @@ export const ArrowNext: React.FC<IconSvgProps> = ({
 }) => (
   <svg
     fill="currentColor"
-    viewBox="0 0 16 16"
     height={size || height}
+    viewBox="0 0 16 16"
     width={size || width}
     {...props}
   >
@@ -480,8 +480,8 @@ export const ArrowPrev: React.FC<IconSvgProps> = ({
 }) => (
   <svg
     fill="currentColor"
-    viewBox="0 0 16 16"
     height={size || height}
+    viewBox="0 0 16 16"
     width={size || width}
     {...props}
   >
@@ -496,15 +496,15 @@ export const CrossIcon: React.FC<IconSvgProps> = ({
   ...props
 }) => (
   <svg
-    viewBox="0 0 16 16"
     fill="currentColor"
     height={size || height}
+    viewBox="0 0 16 16"
     width={size || width}
     {...props}
   >
     <path
-      fill="currentColor"
       d="M15.854 12.854L11 8l4.854-4.854a.503.503 0 000-.707L13.561.146a.499.499 0 00-.707 0L8 5 3.146.146a.5.5 0 00-.707 0L.146 2.439a.499.499 0 000 .707L5 8 .146 12.854a.5.5 0 000 .707l2.293 2.293a.499.499 0 00.707 0L8 11l4.854 4.854a.5.5 0 00.707 0l2.293-2.293a.499.499 0 000-.707z"
+      fill="currentColor"
     />
   </svg>
 );

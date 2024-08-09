@@ -12,10 +12,17 @@ passport.use(
     {
       clientID: GOOGLE_CLIENT_ID,
       clientSecret: GOOGLE_CLIENT_SECRET,
-      callbackURL: "http://localhost:5000/api/v1/auth/google/callback",
+      callbackURL: `${process.env.SERVER_URL}/api/v1/auth/google/callback`,
     },
     async (token, tokenSecret, profile, done) => {
       try {
+        const email = profile.emails?.[0].value || "";
+        if (!email.endsWith("@bitmesra.ac.in")) {
+          return done(
+            "Invalid email domain, use email with @bitmesra.ac.in",
+            false
+          );
+        }
         let user = await User.findOne({ googleId: profile.id });
         if (!user) {
           user = await User.create({

@@ -14,6 +14,10 @@ const JWT_SECRET = process.env.JWT_SECRET!;
 export const registerController = async (req: Request, res: Response) => {
   const { firstName, lastName, email, password } = req.body;
 
+  if (!email.endsWith("@bitmesra.ac.in")) {
+    return res.status(400).json({ message: "Invalid email domain" });
+  }
+
   try {
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -110,6 +114,10 @@ export const loginController = async (req: Request, res: Response) => {
   try {
     if (!email || !password) {
       return res.status(400).json({ message: "Please fill in all fields" });
+    }
+
+    if (!email.endsWith("@bitmesra.ac.in")) {
+      return res.status(400).json({ message: "Invalid email domain" });
     }
     const user = await User.findOne({ email }).select("+hashedPassword");
     if (!user) {

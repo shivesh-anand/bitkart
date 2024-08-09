@@ -36,6 +36,7 @@ router.get(
       _id: string;
       googleId: string;
     };
+
     const firstName = user?.firstName;
     const lastName = user?.lastName;
     const email = user?.email;

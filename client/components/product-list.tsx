@@ -9,12 +9,12 @@ import moment from "moment";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { useSelector } from "react-redux";
 
 import BlurFade from "./magicui/blur-fade";
 
 import { useGetAllItemsQuery } from "@/redux/api/itemSlice";
 import { RootState } from "@/redux/store";
-import { useSelector } from "react-redux";
 
 interface ProductProps {
   category?: string;
@@ -65,6 +65,7 @@ const ProductList = ({ category }: ProductProps) => {
   const handlePress = (id: string) => {
     if (!isAuthenticated) {
       router.push("/login");
+
       return;
     }
     router.push(`/productpage/${id}`);

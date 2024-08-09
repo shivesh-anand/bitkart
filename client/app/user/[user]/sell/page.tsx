@@ -14,7 +14,7 @@ import { RootState } from "@/redux/store";
 
 const SellPage = () => {
   const router = useRouter();
-  const dispatch = useDispatch();
+
   const [createItem] = useCreateItemMutation();
 
   const user = useSelector((state: RootState) => state.auth.user);
@@ -127,7 +127,7 @@ const SellPage = () => {
     }
 
     files.forEach((file) => formData.append("images", file));
-    console.log("formData", formData);
+    //console.log("formData", formData);
     try {
       await createItem(formData).unwrap();
       toast.success("Item created successfully");
