@@ -23,11 +23,11 @@ export const userApi = createApi({
       invalidatesTags: ["User"],
     }),
     getUserItems: builder.query({
-      query: () => "items",
+      query: () => "/users/items",
       providesTags: ["User"],
     }),
     getUserChats: builder.query({
-      query: () => "chats",
+      query: () => "/users/chats",
       providesTags: ["User"],
     }),
   }),

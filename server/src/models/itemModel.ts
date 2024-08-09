@@ -12,6 +12,7 @@ export interface IItem extends Document {
   year_of_purchase: number;
   room_no?: string;
   hostel_no: string;
+  contact_no?: string;
   seller: mongoose.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
@@ -50,6 +51,9 @@ const ItemSchema = new Schema<IItem>(
     hostel_no: {
       type: String,
       required: [true, "Hostel number is required"],
+    },
+    contact_no: {
+      type: String,
     },
 
     seller: {

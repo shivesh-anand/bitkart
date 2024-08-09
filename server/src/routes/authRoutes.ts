@@ -1,16 +1,21 @@
 import { Router } from "express";
+import jwt from "jsonwebtoken";
+import passport from "passport";
+import "../config/passportConfig.js";
 import {
   loginController,
   registerController,
+  resendOtpController,
+  verifyOtpController,
 } from "../controllers/authController.js";
-import passport from "passport";
-import jwt from "jsonwebtoken";
-import "../config/passportConfig.js";
 
 const router = Router();
 
 router.post("/login", loginController);
 router.post("/register", registerController);
+router.post("/verify-otp/:id", verifyOtpController);
+router.post("/login", loginController);
+router.post("/resend-otp", resendOtpController);
 
 router.get(
   "/google",

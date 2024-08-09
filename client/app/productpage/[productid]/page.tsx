@@ -1,12 +1,13 @@
 "use client";
-import { Key, useEffect, useState } from "react";
-import { Image } from "@nextui-org/image";
+import { Button } from "@nextui-org/button";
 import { Card, CardBody, CardFooter, CardHeader } from "@nextui-org/card";
 import { Divider } from "@nextui-org/divider";
-import { Button } from "@nextui-org/button";
+import { Image } from "@nextui-org/image";
 import { Spinner } from "@nextui-org/spinner";
+import { Key, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
+import { ChatIcon } from "@/components/icons";
 import {
   Carousel,
   CarouselContent,
@@ -14,7 +15,6 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { ChatIcon } from "@/components/icons";
 import { useGetItemByIdQuery } from "@/redux/api/itemSlice";
 
 export default function ProductPage({
@@ -24,6 +24,7 @@ export default function ProductPage({
 }) {
   const productId = params.productid;
   const { data, error, isLoading } = useGetItemByIdQuery(productId);
+  //console.log("data", data);
 
   const [imageSize, setImageSize] = useState({ width: 0, height: 0 });
 
@@ -73,12 +74,7 @@ export default function ProductPage({
         className="justify-center items-center w-full mx-auto"
         shadow="lg"
       >
-        <Carousel
-          className="w-full relative"
-          opts={{
-            loop: true,
-          }}
-        >
+        <Carousel className="w-full relative" opts={{ loop: true }}>
           <CarouselContent>
             {data.images.length > 0 ? (
               data.images.map(
@@ -135,10 +131,15 @@ export default function ProductPage({
             <li className="font-normal text-lg">
               Hostel Number: {data.hostel_no}
             </li>
+            <li className="font-normal text-lg">
+              Contact Number:{" "}
+              {data.contact_no ? data.contact_no : "Not Available"}
+            </li>
+            <li className="font-normal text-lg">Email: {data.seller.email}</li>
           </div>
         </CardBody>
         <Divider />
-        <CardFooter>
+        {/* <CardFooter>
           <Button
             fullWidth
             className="mx-10 font-bold text-lg"
@@ -149,7 +150,7 @@ export default function ProductPage({
           >
             Chat with Seller
           </Button>
-        </CardFooter>
+        </CardFooter> */}
       </Card>
     </div>
   );

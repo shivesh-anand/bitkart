@@ -26,7 +26,7 @@ export default function DeleteConfirmationModal({
 }: DeleteConfirmationModalProps) {
   const [deleteItem, { isLoading }] = useDeleteItemMutation();
   const [disableButton, setDisableButton] = useState(false);
-  console.log("delete item", item);
+  //console.log("delete item", item);
   const handleDelete = async () => {
     setDisableButton(true);
     try {

@@ -63,7 +63,13 @@ const LoginPage = () => {
 
       router.push("/");
     } catch (err: any) {
-      toast.error(err.data.message);
+      if (
+        err.data?.message ===
+        "Your account is not verified. A verification email has been sent to your email address."
+      ) {
+        toast.error(err.data.message);
+        router.push(`/verify-otp/${err.data.userId}`);
+      }
     }
   };
 

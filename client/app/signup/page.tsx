@@ -4,18 +4,17 @@ import { Button } from "@nextui-org/button";
 import { Card, CardBody, CardFooter, CardHeader } from "@nextui-org/card";
 import { Input } from "@nextui-org/input";
 import { Link } from "@nextui-org/link";
-import { LockIcon, MailIcon, User2Icon } from "lucide-react";
-import { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import { LockIcon, MailIcon, User2Icon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
 
 import { GoogleIcon, SignIn } from "@/components/icons";
 import GradualSpacing from "@/components/magicui/gradual-spacing";
 import ShineBorder from "@/components/magicui/shine-border";
 import { useRegisterMutation } from "@/redux/api/apiSlice";
-import { setCredentials } from "@/redux/slices/authSlice";
 import { RootState } from "@/redux/store";
 
 const SignUpPage = () => {
@@ -27,7 +26,7 @@ const SignUpPage = () => {
   });
 
   const [register, { isLoading, error, isError }] = useRegisterMutation();
-  const dispatch = useDispatch();
+
   const router = useRouter();
   const isAuthenticated = useSelector(
     (state: RootState) => state.auth.isAuthenticated
@@ -53,9 +52,11 @@ const SignUpPage = () => {
     try {
       const response = await register(form).unwrap();
 
-      toast.success("Registered successfully");
-      dispatch(setCredentials(response.user));
-      router.push("/"); // Redirect to home or other protected page
+      toast.success(response.message);
+      //console.log(response);
+      //console.log(response.user._id);
+      //dispatch(setCredentials(response.user));
+      router.push(`/verify-otp/${response.user._id}`); // Redirect to home or other protected page
     } catch (err) {
       toast.error((err as Error).message);
       // Handle errors (e.g., show error message to user)
@@ -133,6 +134,7 @@ const SignUpPage = () => {
               Sign Up
             </Button>
           </form>
+
           <h1 className="text-center">OR</h1>
           <form className="flex flex-col py-4 px-4 gap-4 w-full">
             <Button

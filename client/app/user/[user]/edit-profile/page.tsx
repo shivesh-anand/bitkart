@@ -20,7 +20,7 @@ const EditProfilePage = () => {
 
   const isGoogleUser = data?.user?.googleId;
 
-  console.log("data", data);
+  //console.log("data", data);
 
   // Initialize form values
   const [formValues, setFormValues] = useState({

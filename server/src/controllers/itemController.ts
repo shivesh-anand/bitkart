@@ -84,6 +84,7 @@ export const createItem = async (req: Request, res: Response) => {
       hostel_no,
       year_of_purchase,
       category,
+      contact_no,
     } = req.body;
 
     const existingItem = await Item.findOne({ title, seller: userId });
@@ -130,6 +131,7 @@ export const createItem = async (req: Request, res: Response) => {
       category,
       seller: userId,
       images: imageDetails,
+      contact_no,
     });
     await newItem.save();
 
@@ -204,7 +206,7 @@ export const getAllItems = async (req: Request, res: Response) => {
           };
         });
 
-        return { ...item.toObject(), images };
+        return { ...item.toObject(), images, contact_no: item.contact_no };
       })
     );
 

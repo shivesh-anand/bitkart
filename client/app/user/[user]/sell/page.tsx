@@ -120,15 +120,21 @@ const SellPage = () => {
     formData.append("hostel_no", (e.target as any).hostelNumber.value);
     formData.append("category", (e.target as any).category.value);
 
-    files.forEach((file) => formData.append("images", file));
+    const contactNumber = (e.target as any).contactNumber.value;
 
+    if (contactNumber) {
+      formData.append("contact_no", contactNumber);
+    }
+
+    files.forEach((file) => formData.append("images", file));
+    console.log("formData", formData);
     try {
       await createItem(formData).unwrap();
       toast.success("Item created successfully");
       setIsLoading(false);
       router.push("/"); // Redirect to items page or another page
     } catch (error) {
-      console.error("Error creating item:", error);
+      //console.error("Error creating item:", error);
       toast.error("Failed to create item");
     }
   };
@@ -198,7 +204,7 @@ const SellPage = () => {
         />
         <Input
           isClearable
-          label="Room Number"
+          label="Room Number (Optional)"
           name="roomNumber"
           placeholder="e.g.: 376"
           type="number"
@@ -213,13 +219,21 @@ const SellPage = () => {
           type="number"
           variant="bordered"
         />
+        <Input
+          isClearable
+          label="Enter 10 digit Contact  (Optional)"
+          name="contactNumber"
+          placeholder="e.g.: 1234567890"
+          type="number"
+          variant="bordered"
+        />
 
         <div className="relative">
           <Button
             fullWidth
             color="secondary"
-            isDisabled={isUploading}
-            isLoading={isUploading}
+            isDisabled={isLoading}
+            isLoading={isLoading}
             size="lg"
             startContent={<UploadIcon />}
             variant="shadow"

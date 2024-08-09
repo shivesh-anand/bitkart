@@ -26,7 +26,7 @@ import { link as linkStyles } from "@nextui-org/theme";
 import clsx from "clsx";
 import NextLink from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import { toast, Toaster } from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -53,10 +53,7 @@ export const Navbar = () => {
     (state: RootState) => state.auth.isAuthenticated
   );
 
-  const [menuOpen, setMenuOpen] = useState<boolean>(false);
-  const toggleMenu = () => setMenuOpen((prev) => !prev);
-
-  const closeMenu = () => setMenuOpen(false);
+  const [isMenuOpen, setIsMenuOpen] = useReducer((current) => !current, false);
 
   useEffect(() => {
     setIsLoggedIn(isAuthenticated);
@@ -112,7 +109,12 @@ export const Navbar = () => {
   );
 
   return (
-    <NextUINavbar className="fixed pb-8" maxWidth="full">
+    <NextUINavbar
+      className="fixed pb-8"
+      isMenuOpen={isMenuOpen}
+      maxWidth="full"
+      onMenuOpenChange={setIsMenuOpen}
+    >
       <Toaster />
       <div className="w-full flex flex-col">
         <NavbarContent className="basis-1/5 sm:basis-full justify-between items-center mt-10">
@@ -201,7 +203,7 @@ export const Navbar = () => {
             <ThemeSwitch />
           </div>
 
-          <NavbarMenuToggle className="sm:hidden" onClick={toggleMenu} />
+          <NavbarMenuToggle className="sm:hidden" />
         </NavbarContent>
 
         <NavbarContent className="mt-2 justify-center hidden lg:flex">
@@ -233,7 +235,7 @@ export const Navbar = () => {
                 color={"foreground"}
                 href={item.href}
                 size="lg"
-                onClick={closeMenu}
+                onPress={() => setIsMenuOpen()}
               >
                 {item.label}
               </Link>

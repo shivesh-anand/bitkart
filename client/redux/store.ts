@@ -10,11 +10,12 @@ import {
   REGISTER,
   REHYDRATE,
 } from "redux-persist";
-import storage from "redux-persist/lib/storage";
+
 import { apiSlice } from "./api/apiSlice";
 import { itemApi } from "./api/itemSlice";
 import { userApi } from "./api/userSlice";
 import authReducer from "./slices/authSlice";
+import storage from "./storage";
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -33,7 +34,7 @@ const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
   reducer: persistedReducer,
-  middleware: (getDefaultMiddleware) =>
+  middleware: (getDefaultMiddleware: any) =>
     getDefaultMiddleware({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],

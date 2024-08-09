@@ -1,21 +1,22 @@
 import mongoose, { Document, model, Schema } from "mongoose";
 
 export interface IUser extends Document {
-  avatar?: string;
   googleId?: string;
   firstName: string;
   lastName: string;
   email: string;
   hashedPassword?: string;
+  otp?: string;
+  otpExpiresAt?: Date;
+  otpRequestsCount?: number;
+  otpLastRequestedAt?: Date;
+  isVerified: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
 
 const UserSchema = new Schema<IUser>(
   {
-    avatar: {
-      type: String,
-    },
     googleId: {
       type: String,
     },
@@ -35,6 +36,26 @@ const UserSchema = new Schema<IUser>(
     hashedPassword: {
       type: String,
       select: false,
+    },
+    otp: {
+      type: String,
+      default: null,
+    },
+    otpExpiresAt: {
+      type: Date,
+      default: null,
+    },
+    otpRequestsCount: {
+      type: Number,
+      default: 0,
+    },
+    otpLastRequestedAt: {
+      type: Date,
+      default: null,
+    },
+    isVerified: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true }
