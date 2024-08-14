@@ -13,11 +13,15 @@ import messageRoutes from "./routes/messageRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import { connectDB } from "./utils/connectDB.js";
 import AWS from "aws-sdk";
+import morgan from "morgan";
 
 dotenv.config();
 
 const app = express();
 app.set("trust proxy", 1);
+
+// Logger middleware
+app.use(morgan("combined"));
 
 AWS.config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,

@@ -181,6 +181,7 @@ export const getAllItems = async (req: Request, res: Response) => {
 
     // Get items with pagination
     const items = await Item.find(query)
+      .sort({ createdAt: -1 })
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize)
       .populate("seller", ["firstName", "lastName", "email"]);
