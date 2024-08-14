@@ -34,7 +34,7 @@ export default function DeleteConfirmationModal({
       toast.success("Item deleted successfully");
       onClose();
     } catch (error) {
-      //console.error("Failed to delete item:", error);
+      console.error("Failed to delete item:", error);
       toast.error("Failed to delete item");
       setDisableButton(false);
     }

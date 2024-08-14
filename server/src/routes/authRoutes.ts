@@ -43,6 +43,14 @@ router.get(
     const _id = user?._id;
     const googleId = user?.googleId;
 
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: true,
+      domain: process.env.DOMAIN,
+      path: "/",
+      sameSite: "none",
+    });
+
     const redirectUrl = `${process.env.FRONTEND_URL}/google-auth?token=${token}&firstName=${firstName}&lastName=${lastName}&email=${email}&_id=${_id}&googleId=${googleId}`;
     //console.log("Redirect URL:", redirectUrl);
     res.redirect(redirectUrl);

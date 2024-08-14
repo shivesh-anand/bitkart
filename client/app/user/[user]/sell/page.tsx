@@ -129,13 +129,16 @@ const SellPage = () => {
     files.forEach((file) => formData.append("images", file));
     //console.log("formData", formData);
     try {
-      await createItem(formData).unwrap();
-      toast.success("Item created successfully");
+      await toast.promise(createItem(formData).unwrap(), {
+        loading: "Uploading may take time as we are using free tier servers!",
+        success: <b>Item created successfully!</b>,
+        error: <b>Error creating item.</b>,
+      });
       setIsLoading(false);
       router.push("/"); // Redirect to items page or another page
     } catch (error) {
-      //console.error("Error creating item:", error);
-      toast.error("Failed to create item");
+      console.error("Error creating item:", error);
+      //toast.error("Failed to create item");
     }
   };
 
@@ -146,6 +149,7 @@ const SellPage = () => {
         className="font-display text-center text-5xl font-bold mb-4 tracking-[-0.1em] text-black dark:text-white md:text-5xl md:leading-[5rem]"
         text="Sell an Item"
       />
+
       <form
         className="items-center justify-center flex flex-col gap-4 w-full"
         onSubmit={handleSubmit}

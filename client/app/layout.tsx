@@ -1,6 +1,8 @@
 import "@/styles/globals.css";
 import clsx from "clsx";
 import { Metadata, Viewport } from "next";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 import ClientProvider from "@/components/client-provider"; // Import your client provider
 import Footer from "@/components/footer";
@@ -49,6 +51,8 @@ export default function RootLayout({
           {/* Use the client provider here */}
           <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
             <Toaster />
+            <Analytics />
+            <SpeedInsights />
             <div className="relative flex flex-col h-screen">
               <Navbar />
               <main className="container mt-16 mx-auto w-full pt-16 px-6 flex-grow">

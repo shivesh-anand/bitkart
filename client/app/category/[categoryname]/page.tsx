@@ -12,7 +12,7 @@ import {
   SportsIcon,
   StationaryIcon,
   WatchIcon,
-} from "@/components/icons"; // Import all required icons
+} from "@/components/icons";
 import GradualSpacing from "@/components/magicui/gradual-spacing";
 import ProductList from "@/components/product-list";
 import { IconSvgProps } from "@/types";

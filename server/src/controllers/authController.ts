@@ -53,8 +53,8 @@ export const registerController = async (req: Request, res: Response) => {
 export const verifyOtpController = async (req: Request, res: Response) => {
   const userId = req.params.id;
   const { otp } = req.body;
-  console.log("User ID:", userId);
-  console.log("OTP:", otp);
+  //console.log("User ID:", userId);
+  //console.log("OTP:", otp);
 
   try {
     const isValid = await validateOTP(userId, otp);
@@ -75,7 +75,9 @@ export const verifyOtpController = async (req: Request, res: Response) => {
       res
         .cookie("token", token, {
           httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
+          secure: true,
+          sameSite: "none",
+          domain: process.env.DOMAIN,
         })
         .status(200)
         .json({
@@ -147,7 +149,9 @@ export const loginController = async (req: Request, res: Response) => {
     res
       .cookie("token", token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
+        secure: true,
+        sameSite: "none",
+        domain: process.env.DOMAIN,
       })
       .status(200)
       .json({

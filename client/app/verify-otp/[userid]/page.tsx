@@ -65,6 +65,7 @@ const VerifyOtpPage = ({ params }: { params: { userid: string } }) => {
       toast.success("Account verified successfully");
       dispatch(setCredentials(response.user));
       router.push("/login");
+      window.location.reload();
     } catch (err: any) {
       toast.error(err.data?.message || "Verification failed");
     } finally {

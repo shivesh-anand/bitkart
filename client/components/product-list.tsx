@@ -38,7 +38,9 @@ export interface Item {
   updatedAt: Date;
 }
 
-const ProductList = ({ category }: ProductProps) => {
+const ProductList: React.FC<ProductProps> = ({
+  category,
+}: ProductProps): JSX.Element | null => {
   const router = useRouter();
   const [page, setPage] = useState(1);
   const limit = 10; // Items per page
@@ -83,9 +85,10 @@ const ProductList = ({ category }: ProductProps) => {
   }
 
   if (error) {
-    return toast.error("An error occurred. Please try again later.", {
+    toast.error("An error occurred. Please try again later.", {
       id: "error",
     });
+    return null; // Ensure that null is returned in case of an error
   }
 
   const filteredData = category

@@ -15,7 +15,7 @@ import {
 } from "@/redux/api/userSlice";
 
 const EditProfilePage = () => {
-  const { data, isError, isLoading } = useGetUserProfileQuery({});
+  const { data, isError, error, isLoading } = useGetUserProfileQuery({});
   const [updateUserProfile] = useUpdateUserProfileMutation();
 
   const isGoogleUser = data?.user?.googleId;
@@ -60,7 +60,7 @@ const EditProfilePage = () => {
       await updateUserProfile(updatedUser).unwrap();
       toast.success("Profile updated successfully");
     } catch (error) {
-      // console.log(error);
+      console.log(error);
       toast.error("An error occurred. Please try again.");
     }
   };
@@ -81,7 +81,7 @@ const EditProfilePage = () => {
 
   if (isError) {
     toast.error("An error occurred. Please try again.");
-
+    console.log(error);
     return null;
   }
 

@@ -3,9 +3,13 @@ import Cookies from "js-cookie";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/`,
+  credentials: "include",
   prepareHeaders: (headers) => {
-    const token = Cookies.get("token");
+    headers.set("Content-Type", "application/json");
 
+    headers.set("Access-Control-Allow-Credentials", "true");
+    const token = Cookies.get("token");
+    //console.log("token in apislice", token);
     if (token) {
       headers.set("Authorization", `Bearer ${token}`);
     }

@@ -1,8 +1,20 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import Cookies from "js-cookie";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/`,
   credentials: "include",
+  prepareHeaders: (headers) => {
+    // Log all cookies
+    //console.log("All Cookies:", Cookies.get());
+
+    const token = Cookies.get("token");
+    if (token) {
+      headers.set("Authorization", `Bearer ${token}`);
+    }
+
+    return headers;
+  },
 });
 
 export const itemApi = createApi({

@@ -14,6 +14,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { useGetItemByIdQuery } from "@/redux/api/itemSlice";
+import { Link } from "@nextui-org/link";
 
 export default function ProductPage({
   params,
@@ -131,9 +132,18 @@ export default function ProductPage({
             </li>
             <li className="font-normal text-lg">
               Contact Number:{" "}
-              {data.contact_no ? data.contact_no : "Not Available"}
+              {data.contact_no ? (
+                <Link href={`tel:${data.contact_no}`}>{data.contact_no}</Link>
+              ) : (
+                "Not Available"
+              )}
             </li>
-            <li className="font-normal text-lg">Email: {data.seller.email}</li>
+            <li className="font-normal text-lg">
+              Email:{" "}
+              <Link href={`mailto:${data.seller.email}`}>
+                {data.seller.email}
+              </Link>
+            </li>
           </div>
         </CardBody>
         <Divider />

@@ -105,6 +105,6 @@ export const siteConfig = {
   ],
   links: {
     github: "https://github.com/shivesh-anand/bitkart",
-    mail: "mailto:theshiveshanand@gmail.com",
+    mail: "mailto:bitkart.contact@gmail.com",
   },
 };

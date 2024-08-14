@@ -6,7 +6,8 @@
 .pnp.js
 .npmrc
 .env
-
+.next
+.vscode
 # testing
 /coverage
 

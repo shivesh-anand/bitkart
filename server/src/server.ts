@@ -18,8 +18,6 @@ if (cluster.isPrimary) {
     console.log(`Worker ${worker.process.pid} died. Forking a new worker...`);
   });
 } else {
-  // Workers can share any TCP connection
-  // In this case it is an HTTP server
   app.listen(PORT, () => {
     console.log(`Worker ${process.pid} is running on port ${PORT}`);
   });

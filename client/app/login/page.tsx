@@ -21,6 +21,7 @@ import { RootState } from "@/redux/store";
 
 const LoginPage = () => {
   const [form, setForm] = useState({ email: "", password: "" });
+  const [isValidEmail, setIsValidEmail] = useState(false);
   const [login, { isLoading }] = useLoginMutation();
   const dispatch = useDispatch();
   const router = useRouter();
@@ -38,10 +39,21 @@ const LoginPage = () => {
   }, [isAuthenticated, router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+
     setForm({
       ...form,
-      [e.target.name]: e.target.value,
+      [name]: value,
     });
+
+    // Validate email
+    if (name === "email") {
+      if (!value.endsWith("@bitmesra.ac.in")) {
+        setIsValidEmail(true);
+      } else {
+        setIsValidEmail(false);
+      }
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -62,12 +74,14 @@ const LoginPage = () => {
       toast.success("Logged in successfully", { id: "logged in" });
 
       router.push("/");
+      window.location.reload();
     } catch (err: any) {
       if (
         err.data?.message ===
         "Your account is not verified. A verification email has been sent to your email address."
       ) {
         toast.error(err.data.message);
+        //console.log(err);
         router.push(`/verify-otp/${err.data.userId}`);
       }
     }
@@ -81,7 +95,8 @@ const LoginPage = () => {
           text="Log In"
         />
       </CardHeader>
-      <CardBody>
+      <CardBody className="items-center justify-center">
+        <h1>Use your institute email id</h1>
         <form
           className="flex flex-col py-4 px-4 gap-4 w-full"
           onSubmit={handleSubmit}
@@ -92,10 +107,13 @@ const LoginPage = () => {
             }
             label="Email"
             name="email"
-            placeholder="Enter your email"
+            placeholder="Enter your email e.g: btech10123.21@bitmesra.ac.in"
             value={form.email}
+            isInvalid={isValidEmail}
+            errorMessage="Please use your institute email id"
             variant="bordered"
             onChange={handleChange}
+            isRequired
           />
           <Input
             endContent={
@@ -108,6 +126,7 @@ const LoginPage = () => {
             value={form.password}
             variant="bordered"
             onChange={handleChange}
+            isRequired
           />
           <Button
             className="font-bold text-lg w-full transition duration-200 hover:bg-green-500 hover:text-black"
@@ -126,6 +145,7 @@ const LoginPage = () => {
             className="font-bold text-lg w-full transition duration-200 hover:bg-green-500 hover:text-black"
             size="lg"
             startContent={<GoogleIcon />}
+            isDisabled={isLoading}
             variant="shadow"
             onPress={() =>
               (window.location.href = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/auth/google`)

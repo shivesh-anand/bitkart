@@ -15,7 +15,7 @@ export const sendOTP = async (email: string, otp: string): Promise<void> => {
     from: process.env.EMAIL_USER,
     to: email,
     subject: "Bitkart OTP Code",
-    text: `Your OTP code is: <strong>${otp}</strong><br/>Do not reply to this email.`,
+    text: `Your OTP code is: ${otp}.Do not reply to this email. Valid for 10 minutes`,
   };
 
   await transporter.sendMail(mailOptions);

@@ -1,31 +1,32 @@
-import { Request, Response } from "express";
-import Item from "../models/itemModel.js";
-import User from "../models/userModel.js";
-import {
-  S3Client,
-  PutObjectCommand,
-  GetObjectCommand,
-  DeleteObjectCommand,
-  ListObjectsV2Command,
-  DeleteObjectsCommand,
-} from "@aws-sdk/client-s3";
-import crypto from "crypto";
-import sharp from "sharp";
-import { getSignedUrl } from "@aws-sdk/cloudfront-signer";
 import {
   CloudFrontClient,
   CreateInvalidationCommand,
 } from "@aws-sdk/client-cloudfront";
+import {
+  DeleteObjectsCommand,
+  ListObjectsV2Command,
+  PutObjectCommand,
+  S3Client,
+} from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/cloudfront-signer";
+import crypto from "crypto";
+import { Request, Response } from "express";
+import Item from "../models/itemModel.js";
+import User from "../models/userModel.js";
+
+import fs, { createReadStream } from "fs";
+import path from "path";
+import { promisify } from "util";
 
 const bucketName = process.env.AWS_BUCKET_NAME;
-const region = process.env.AWS_BUCKET_REGION;
+const region = process.env.AWS_BUCKET_REGION || "ap-south-1";
 const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
 const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
 const cloudfrontDomain = process.env.CLOUDFRONT_DOMAIN;
 const cloudFrontDistID = process.env.CLOUDFRONT_DIST_ID;
 
 const transformBucketName = process.env.AWS_TRANSFORM_BUCKET_NAME;
-const transformRegion = process.env.AWS_TRANSFORM_BUCKET_REGION;
+const transformRegion = process.env.AWS_TRANSFORM_BUCKET_REGION || "ap-south-1";
 const transformAccessKeyId = process.env.AWS_TRANSFORM_ACCESS_KEY_ID;
 const transformSecretAccessKey = process.env.AWS_TRANSFORM_SECRET_ACCESS_KEY;
 
@@ -73,6 +74,8 @@ const randomImageName = (bytes = 32) =>
 
 const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25 MB
 
+const unlinkAsync = promisify(fs.unlink);
+
 export const createItem = async (req: Request, res: Response) => {
   try {
     const userId = req.user?.id;
@@ -108,16 +111,19 @@ export const createItem = async (req: Request, res: Response) => {
     // Resize and upload each image
     const imageDetails = [];
     for (const file of req.files as Express.Multer.File[]) {
-      const buffer = await sharp(file.buffer).toFormat("webp").toBuffer();
+      const filePath = path.join("uploads", file.filename);
+
+      //const buffer = await sharp(filePath).toFormat("webp").toBuffer();
       const imageName = randomImageName();
       const params = {
         Bucket: bucketName!,
         Key: imageName,
-        Body: buffer,
+        Body: createReadStream(filePath),
         ContentType: file.mimetype,
       };
       const command = new PutObjectCommand(params);
       await s3.send(command);
+      await unlinkAsync(filePath);
       imageDetails.push({ key: imageName });
     }
 
@@ -271,6 +277,7 @@ export const getItems = async (req: Request, res: Response) => {
 
     res.json(transformedItems);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Server error", error });
   }
 };
@@ -352,6 +359,7 @@ export const updateItem = async (req: Request, res: Response) => {
     await item.save();
     res.json(item);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Server error", error });
   }
 };
@@ -429,6 +437,7 @@ export const deleteItem = async (req: Request, res: Response) => {
 
     res.json({ message: "Item deleted successfully" });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Server error", error });
   }
 };
@@ -468,12 +477,20 @@ export const updateImages = async (req: Request, res: Response) => {
     // Resize and upload new images
     const newImages = [];
     for (const file of req.files as Express.Multer.File[]) {
-      const buffer = await sharp(file.buffer).toFormat("webp").toBuffer();
+      const filePath = path.join("uploads", file.filename);
+
+      // Check if the file exists
+      if (!fs.existsSync(filePath)) {
+        return res.status(400).json({ message: `File not found: ${filePath}` });
+      }
+
+      // Resize the image
+      //const buffer = await sharp(filePath).toFormat("webp").toBuffer();
       const imageName = randomImageName();
       const params = {
         Bucket: bucketName,
         Key: imageName,
-        Body: buffer,
+        Body: createReadStream(filePath),
         ContentType: file.mimetype,
       };
       const command = new PutObjectCommand(params);
@@ -482,6 +499,9 @@ export const updateImages = async (req: Request, res: Response) => {
         url: `${process.env.CLOUDFRONT_DOMAIN}${imageName}`,
         key: imageName,
       });
+
+      // Delete the file from disk after uploading to S3
+      await unlinkAsync(filePath);
     }
 
     // Update images in item
@@ -491,6 +511,7 @@ export const updateImages = async (req: Request, res: Response) => {
 
     res.json({ message: "Images updated successfully", item });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Server error", error });
   }
 };
@@ -579,6 +600,7 @@ export const deleteImage = async (req: Request, res: Response) => {
 
     res.json({ message: "Image deleted successfully", item });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Server error", error });
   }
 };

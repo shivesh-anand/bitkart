@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
 import Cookies from "js-cookie";
-import { useDispatch } from "react-redux";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
 
 import { setCredentials } from "@/redux/slices/authSlice";
 
@@ -20,9 +20,9 @@ const GoogleAuthPage = () => {
     const email = searchParams.get("email")!;
     const _id = searchParams.get("_id")!;
     const googleId = searchParams.get("googleId")!;
-
+    console.log("token", token);
     if (token) {
-      Cookies.set("token", token, { expires: 1, secure: true });
+      //Cookies.set("token", token, { expires: 1, secure: true });
 
       dispatch(
         setCredentials({
@@ -36,8 +36,8 @@ const GoogleAuthPage = () => {
       );
 
       toast.success("Logged in successfully!", { id: "login-success" });
-
-      router.replace("/");
+      localStorage.setItem("loggedIn", "true");
+      router.push("/");
     } else if (searchParams.get("error") === "already_signed_up") {
       toast.error("You are already signed up!", { id: "already-signed-up" });
       router.replace("/login");

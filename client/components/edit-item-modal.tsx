@@ -53,6 +53,7 @@ export default function EditItemModal({
     price: "",
     roomNumber: "",
     hostelNumber: "",
+    contactNumber: "",
   });
 
   const { data: fetchedItem, refetch } = useGetItemByIdQuery(itemId);
@@ -69,6 +70,7 @@ export default function EditItemModal({
         price: String(fetchedItem.price),
         roomNumber: String(fetchedItem.room_no || ""),
         hostelNumber: String(fetchedItem.hostel_no),
+        contactNumber: String(fetchedItem.contact_no),
       });
     }
   }, [fetchedItem]);
@@ -161,28 +163,33 @@ export default function EditItemModal({
   const handleSubmit = async () => {
     setDisableEditButton(true);
     setEditLoading(true);
-    try {
-      const updatedFields: Partial<Item> = {
-        title: formValues.title,
-        description: formValues.description,
-        price: Number(formValues.price),
-        room_no: formValues.roomNumber || undefined,
-        hostel_no: formValues.hostelNumber || undefined,
-      };
 
-      await updateItem({
-        id: itemId,
-        updatedItem: updatedFields,
-      }).unwrap();
+    const updatedFields: Partial<Item> = {
+      title: formValues.title,
+      description: formValues.description,
+      price: Number(formValues.price),
+      room_no: formValues.roomNumber || undefined,
+      hostel_no: formValues.hostelNumber || undefined,
+      contact_no: formValues.contactNumber || undefined,
+    };
 
-      toast.success("Item updated successfully");
-      onClose();
-    } catch (error) {
-      toast.error("Failed to update item");
-    } finally {
-      setDisableEditButton(false);
-      setEditLoading(false);
-    }
+    toast
+      .promise(
+        updateItem({ id: itemId, updatedItem: updatedFields }).unwrap(),
+        {
+          loading:
+            "Updating item may take time as we are using free tier servers!",
+          success: "Item updated successfully",
+          error: "Failed to update item",
+        }
+      )
+      .then(() => {
+        onClose();
+      })
+      .finally(() => {
+        setDisableEditButton(false);
+        setEditLoading(false);
+      });
   };
 
   return (
@@ -274,6 +281,15 @@ export default function EditItemModal({
                 placeholder={String(formValues.hostelNumber)}
                 type="number"
                 value={formValues.hostelNumber}
+                variant="bordered"
+                onChange={handleInputChange}
+              />
+              <Input
+                label="Edit Contact Number"
+                name="contactNumber"
+                placeholder={String(formValues.hostelNumber)}
+                type="number"
+                value={formValues.contactNumber}
                 variant="bordered"
                 onChange={handleInputChange}
               />

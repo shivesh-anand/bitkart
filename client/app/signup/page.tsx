@@ -9,7 +9,7 @@ import { LockIcon, MailIcon, User2Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 import { GoogleIcon, SignIn } from "@/components/icons";
 import GradualSpacing from "@/components/magicui/gradual-spacing";
@@ -26,6 +26,7 @@ const SignUpPage = () => {
   });
 
   const [register, { isLoading, error, isError }] = useRegisterMutation();
+  const [isValidEmail, setIsValidEmail] = useState(false);
 
   const router = useRouter();
   const isAuthenticated = useSelector(
@@ -40,11 +41,29 @@ const SignUpPage = () => {
     }
   }, [isAuthenticated, router]);
 
+  // const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   setForm({
+  //     ...form,
+  //     [e.target.name]: e.target.value,
+  //   });
+  // };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+
     setForm({
       ...form,
-      [e.target.name]: e.target.value,
+      [name]: value,
     });
+
+    // Validate email
+    if (name === "email") {
+      if (!value.endsWith("@bitmesra.ac.in")) {
+        setIsValidEmail(true);
+      } else {
+        setIsValidEmail(false);
+      }
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -59,6 +78,7 @@ const SignUpPage = () => {
       router.push(`/verify-otp/${response.user._id}`); // Redirect to home or other protected page
     } catch (err) {
       toast.error((err as Error).message);
+      //console.log(err);
       // Handle errors (e.g., show error message to user)
     }
   };
@@ -72,7 +92,8 @@ const SignUpPage = () => {
             text="Sign Up"
           />
         </CardHeader>
-        <CardBody>
+        <CardBody className="items-center justify-center">
+          <h1>Use your institute email id</h1>
           <form
             className="flex flex-col py-4 px-4 gap-4 w-full"
             onSubmit={handleSubmit}
@@ -87,6 +108,7 @@ const SignUpPage = () => {
               value={form.firstName}
               variant="bordered"
               onChange={handleChange}
+              isRequired
             />
             <Input
               endContent={
@@ -98,6 +120,7 @@ const SignUpPage = () => {
               value={form.lastName}
               variant="bordered"
               onChange={handleChange}
+              isRequired
             />
             <Input
               endContent={
@@ -105,10 +128,13 @@ const SignUpPage = () => {
               }
               label="Email"
               name="email"
-              placeholder="Enter your email"
+              placeholder="Enter your email e.g: btech10123.21@bitmesra.ac.in"
               value={form.email}
               variant="bordered"
               onChange={handleChange}
+              isInvalid={isValidEmail}
+              errorMessage="Please enter your institute email id"
+              isRequired
             />
             <Input
               endContent={
@@ -121,6 +147,7 @@ const SignUpPage = () => {
               value={form.password}
               variant="bordered"
               onChange={handleChange}
+              isRequired
             />
             <Button
               className="w-full"
@@ -142,6 +169,7 @@ const SignUpPage = () => {
               color="success"
               size="lg"
               startContent={<GoogleIcon />}
+              isDisabled={isLoading}
               variant="shadow"
               onPress={() =>
                 (window.location.href = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/auth/google`)

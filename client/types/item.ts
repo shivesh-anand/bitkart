@@ -11,6 +11,7 @@ export interface Item {
   year_of_purchase: number;
   room_no?: string;
   hostel_no: string;
+  contact_no: string;
   seller: string;
   createdAt: Date;
   updatedAt: Date;
