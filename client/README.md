@@ -1,53 +1,56 @@
-# Next.js & NextUI Template
+# Bitkart Client
 
-This is a template for creating applications using Next.js 14 (app directory) and NextUI (v2).
+Welcome to the Bitkart Client repository! This README provides detailed information about the client-side of the Bitkart platform, which enables BIT Mesra students to buy and sell used items seamlessly. The client is hosted on Vercel, with Vercel Analytics enabled to monitor performance and user interactions, ensuring an optimized user experience based on real-time data.
 
-[Try it on CodeSandbox](https://githubbox.com/nextui-org/next-app-template)
+## Technologies and Tools Used
 
-## Technologies Used
+### Core Framework
 
-- [Next.js 14](https://nextjs.org/docs/getting-started)
-- [NextUI v2](https://nextui.org/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [Tailwind Variants](https://tailwind-variants.org)
-- [TypeScript](https://www.typescriptlang.org/)
-- [Framer Motion](https://www.framer.com/motion/)
-- [next-themes](https://github.com/pacocoursey/next-themes)
+- **Next.js:** This powerful React framework is the backbone of the Bitkart client, offering server-side rendering and static site generation to enhance performance and search engine optimization (SEO).
 
-## How to Use
+### UI/UX
 
-### Use the template with create-next-app
+- **Tailwind CSS:** A utility-first CSS framework that enables rapid and efficient styling of the user interface, ensuring a clean and responsive design.
+- **NextUI:** A Tailwind-based UI library featuring customizable prebuilt components, allowing for a consistent and professional look across the application.
+- **React SVG Icons and Lucide React:** These libraries provide scalable vector icons that are easily integrated into the application, enhancing the visual appeal.
 
-To create a new project based on this template using `create-next-app`, run the following command:
+### State Management
 
-```bash
-npx create-next-app -e https://github.com/nextui-org/next-app-template
-```
+- **Redux Toolkit and RTK Query:** These tools are used for managing global application state and handling API requests efficiently. They ensure a smooth and predictable user experience across the client.
 
-### Install dependencies
+### Cookie Management
 
-You can use one of them `npm`, `yarn`, `pnpm`, `bun`, Example using `npm`:
+- **JS Cookie:** A lightweight library for managing cookies on the client side, including handling JWT tokens for secure user authentication.
 
-```bash
-npm install
-```
+### Date and Time Management
 
-### Run the development server
+- **Moment and Moment Timezone:** Libraries used to format the creation and update times of items, making them easily understandable and user-friendly.
 
-```bash
-npm run dev
-```
+### Notifications
 
-### Setup pnpm (optional)
+- **React Hot Toast:** A library for providing real-time toast notifications across the application, offering immediate feedback to users on various actions.
 
-If you are using `pnpm`, you need to add the following code to your `.npmrc` file:
+## Installation and Setup
 
-```bash
-public-hoist-pattern[]=*@nextui-org/*
-```
+To run the Bitkart Client locally, follow these steps:
 
-After modifying the `.npmrc` file, you need to run `pnpm install` again to ensure that the dependencies are installed correctly.
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/yourusername/bitkart-client.git
+   cd bitkart-client
+   ```
 
-## License
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-Licensed under the [MIT license](https://github.com/nextui-org/next-app-template/blob/main/LICENSE).
+3. **Set up environment variables:**
+   Create a `.env.local` file in the root directory and add your environment variables, such as API endpoints and keys.
+
+4. **Run the development server:**
+   ```bash
+   npm run dev
+   ```
+
+   The client will be available at `http://localhost:3000`.
