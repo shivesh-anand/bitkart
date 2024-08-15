@@ -22,7 +22,7 @@ Welcome to the Bitkart Server repository! This server application powers the Bit
 
 ### File Handling
 
-- **AWS S3 and CloudFront:** Solutions for secure image storage and efficient content delivery. S3 handles secure storage while CloudFront optimizes image delivery and caching.
+- **AWS S3 and CloudFront:** Solutions for secure image storage and efficient content delivery. S3 handles secure storage while CloudFront optimizes image delivery and caching. Images are served via pre-signed URLs to provide secure and temporary access to private files.
 - **Multer:** Middleware for managing file uploads, configured to temporarily store files on disk before transferring them to S3.
 
 ### Utilities
