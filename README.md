@@ -3,7 +3,7 @@
 
 Bitkart is a platform designed for BIT Mesra students to buy and sell used items. Built with Next.js, Express, Node.js, and MongoDB, Bitkart emphasizes scalability and handling a large user base.
 
-### [Visit the Deployed Site](https://bitkart-client.vercel.app/)
+### [Visit the Deployed Site](https://bitkart.live/)
 
 ## Features
 
@@ -20,6 +20,8 @@ Bitkart is a platform designed for BIT Mesra students to buy and sell used items
 -   **Responsive Design:** The application is responsive, ensuring an optimal experience on desktops, tablets, and mobile devices.
     
 -   **Secure and Scalable File Handling:** Bitkart leverages AWS S3 and CloudFront for storing, transforming, and serving images. This setup ensures secure uploads, efficient transformations (such as resizing or cropping), and fast delivery to users, enhancing overall performance.
+
+- **Error Tracking and Feedback:** Sentry is integrated for user feedback, bug reports, and error tracking, helping to monitor and improve the application's performance and user experience.
     
 
 ## Security and Scalability Features
@@ -44,6 +46,7 @@ Bitkart prioritizes security and includes several measures to protect user data 
 -   **Moment and Moment Timezone:** For formatting item creation and update times.
 -   **React Hot Toast:** For toast notifications.
 -   **React SVG Icons and Lucide React:** For icons.
+-  **Sentry**: For reporting errors and bugs
 
 **Backend:**
 
