@@ -69,7 +69,7 @@ export const verifyOtpController = async (req: Request, res: Response) => {
       await user.save();
 
       const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET!, {
-        expiresIn: "7d",
+        expiresIn: "1d",
       });
 
       res
@@ -78,6 +78,7 @@ export const verifyOtpController = async (req: Request, res: Response) => {
           secure: true,
           sameSite: "none",
           domain: process.env.DOMAIN,
+          maxAge: 24 * 60 * 60 * 1000,
         })
         .status(200)
         .json({
@@ -145,13 +146,14 @@ export const loginController = async (req: Request, res: Response) => {
         userId: user._id,
       });
     }
-    const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: "7d" });
+    const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: "1d" });
     res
       .cookie("token", token, {
         httpOnly: true,
         secure: true,
         sameSite: "none",
         domain: process.env.DOMAIN,
+        maxAge: 24 * 60 * 60 * 1000,
       })
       .status(200)
       .json({

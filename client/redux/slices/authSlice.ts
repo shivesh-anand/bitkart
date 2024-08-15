@@ -31,11 +31,6 @@ const authSlice = createSlice({
     setCredentials: (state, action: PayloadAction<User>) => {
       state.user = action.payload;
       state.isAuthenticated = true;
-      Cookies.set("token", action.payload.token, {
-        secure: true,
-        sameSite: "none",
-        expires: 7,
-      });
     },
     logout: (state) => {
       state.user = null;
