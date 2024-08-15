@@ -1,6 +1,6 @@
 # Bitkart Client
 
-Welcome to the Bitkart Client repository! This README provides detailed information about the client-side of the Bitkart platform, which enables BIT Mesra students to buy and sell used items seamlessly. The client is hosted on Vercel, with Vercel Analytics enabled to monitor performance and user interactions, ensuring an optimized user experience based on real-time data.
+Welcome to the Bitkart Client repository! This README provides detailed information about the client-side of the Bitkart platform, which enables BIT Mesra students to buy and sell used items seamlessly. The client is hosted on Vercel, with Vercel Analytics enabled to monitor performance and user interactions, ensuring an optimized user experience based on real-time data. Additionally, Sentry is integrated for real-time error tracking and performance monitoring, providing valuable insights for maintaining and improving the application.
 
 ## Technologies and Tools Used
 
@@ -29,6 +29,10 @@ Welcome to the Bitkart Client repository! This README provides detailed informat
 ### Notifications
 
 - **React Hot Toast:** A library for providing real-time toast notifications across the application, offering immediate feedback to users on various actions.
+
+### Error Tracking and Monitoring
+
+-   **Sentry:** Integrated for real-time error tracking and performance monitoring. Sentry helps capture and log errors, track performance issues, and gather insights to enhance application reliability and user experience.
 
 ## Installation and Setup
 
