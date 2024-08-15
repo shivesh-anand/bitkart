@@ -19,6 +19,29 @@ import { useLoginMutation } from "@/redux/api/apiSlice";
 import { setCredentials } from "@/redux/slices/authSlice";
 import { RootState } from "@/redux/store";
 
+const metadata = {
+  title: "Login - Bitkart",
+  description:
+    "Login to your Bitkart account using your institute email ID. Secure and easy access to your account with email and password or Google login.",
+  keywords: [
+    "Bitkart login",
+    "institute email login",
+    "BIT Mesra login",
+    "student login",
+    "secure login",
+    "second-hand marketplace",
+    "online shopping",
+    "BIT Mesra",
+    "Birla Institute of Technology, Mesra",
+    "Birla Institute of Technology",
+    "BIT",
+  ],
+  author: "Shivesh Anand",
+  robots: "index, follow",
+  viewport: "width=device-width, initial-scale=1.0",
+  charset: "UTF-8",
+};
+
 const LoginPage = () => {
   const [form, setForm] = useState({ email: "", password: "" });
   const [isValidEmail, setIsValidEmail] = useState(false);

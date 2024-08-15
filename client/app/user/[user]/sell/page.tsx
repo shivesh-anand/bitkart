@@ -5,7 +5,7 @@ import { Select, SelectItem } from "@nextui-org/select";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { Toaster, toast } from "react-hot-toast";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 import { AddIcon, CrossIcon, UploadIcon } from "@/components/icons";
 import GradualSpacing from "@/components/magicui/gradual-spacing";
@@ -305,7 +305,7 @@ export default SellPage;
 const categories = [
   { label: "Electronics", value: "electronics" },
   { label: "Clothing", value: "clothing" },
-  { label: "Stationery", value: "stationery" },
+  { label: "Stationery", value: "stationary" },
   { label: "Hostel Essentials", value: "hostel-essentials" },
   { label: "Shoes", value: "shoes" },
   { label: "Sports", value: "sports" },

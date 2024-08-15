@@ -132,7 +132,7 @@ export default function ProductPage({
             </li>
             <li className="font-normal text-lg">
               Contact Number:{" "}
-              {data.contact_no ? (
+              {data.contact_no && data.conatact_no !== undefined ? (
                 <Link href={`tel:${data.contact_no}`}>{data.contact_no}</Link>
               ) : (
                 "Not Available"

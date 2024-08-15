@@ -58,6 +58,36 @@ const categoryTitles: Record<Category, string> = {
   others: "Others",
 };
 
+const metadata = {
+  title: "Category - Bitkart",
+  description:
+    "Explore a variety of used items in different categories at Bitkart. Find the best deals in electronics, bikes, clothing, and more. Shop now!",
+  keywords: [
+    "Bitkart",
+    "used items",
+    "buy and sell",
+    "second-hand",
+    "online marketplace",
+    "electronics",
+    "bikes",
+    "clothing",
+    "books",
+    "stationary",
+    "hostel essentials",
+    "accessories",
+    "beauty and health",
+    "sports",
+    "BIT",
+    "BIT Mesra",
+    "Birla Institute of Technology, Mesra",
+    "students",
+  ],
+  author: "Shivesh Anand",
+  robots: "index, follow",
+  viewport: "width=device-width, initial-scale=1.0",
+  charset: "UTF-8",
+};
+
 export default function CategoryPage({
   params,
 }: {

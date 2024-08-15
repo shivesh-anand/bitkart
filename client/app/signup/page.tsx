@@ -17,6 +17,29 @@ import ShineBorder from "@/components/magicui/shine-border";
 import { useRegisterMutation } from "@/redux/api/apiSlice";
 import { RootState } from "@/redux/store";
 
+const metadata = {
+  title: "Sign Up - Bitkart",
+  description:
+    "Create a new Bitkart account using your institute email ID. Sign up easily with your email and password or via Google login.",
+  keywords: [
+    "Bitkart sign up",
+    "institute email sign up",
+    "BIT Mesra sign up",
+    "student sign up",
+    "secure sign up",
+    "second-hand marketplace",
+    "online shopping",
+    "BIT Mesra",
+    "Birla Institute of Technology, Mesra",
+    "Birla Institute of Technology",
+    "BIT",
+  ],
+  author: "Shivesh Anand",
+  robots: "index, follow",
+  viewport: "width=device-width, initial-scale=1.0",
+  charset: "UTF-8",
+};
+
 const SignUpPage = () => {
   const [form, setForm] = useState({
     firstName: "",

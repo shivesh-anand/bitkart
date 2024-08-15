@@ -13,6 +13,28 @@ import BlurFade from "@/components/magicui/blur-fade";
 import { useGetAllItemsQuery } from "@/redux/api/itemSlice";
 import { Item } from "@/types/item";
 
+const metadata = {
+  title: "Search Results - Bitkart",
+  description:
+    "Browse through search results for items listed on Bitkart. Find the best deals on second-hand items posted by BIT Mesra students.",
+  keywords: [
+    "Bitkart search results",
+    "second-hand items",
+    "student marketplace",
+    "BIT Mesra shopping",
+    "BIT Mesra second-hand",
+    "Birla Institute of Technology",
+    "BIT Mesra",
+    "student deals",
+    "online marketplace",
+    "used items",
+  ],
+  author: "Shivesh Anand",
+  robots: "index, follow",
+  viewport: "width=device-width, initial-scale=1.0",
+  charset: "UTF-8",
+};
+
 const ResultsPage = () => {
   const searchParams = useSearchParams();
   const query = searchParams.get("search") || "";
