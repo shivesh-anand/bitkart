@@ -26,7 +26,7 @@ router.get(
   passport.authenticate("google", { failureRedirect: "/login" }),
   (req, res) => {
     const token = jwt.sign({ id: req.user?.id }, process.env.JWT_SECRET!, {
-      expiresIn: "7d",
+      expiresIn: "1d",
     });
     const user = req.user as {
       id: string;
@@ -49,6 +49,7 @@ router.get(
       domain: process.env.DOMAIN,
       path: "/",
       sameSite: "none",
+      maxAge: 24 * 60 * 60 * 1000,
     });
 
     const redirectUrl = `${process.env.FRONTEND_URL}/google-auth?token=${token}&firstName=${firstName}&lastName=${lastName}&email=${email}&_id=${_id}&googleId=${googleId}`;
