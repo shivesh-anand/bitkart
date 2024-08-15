@@ -90,7 +90,7 @@ const EditProfilePage = () => {
       <Card fullWidth shadow="lg">
         <CardHeader className="flex flex-wrap gap-4 text-center text-5xl font-extrabold justify-center">
           <GradualSpacing
-            className="font-display text-center text-5xl font-bold tracking-[-0.1em] text-black dark:text-white md:text-5xl md:leading-[5rem]"
+            className="font-display text-center text-5xl font-bold tracking-[-0.1em]  text-black dark:text-white md:text-5xl md:leading-[5rem]"
             text={`Hi! ${formValues.firstName} ${formValues.lastName}`}
           />
         </CardHeader>
